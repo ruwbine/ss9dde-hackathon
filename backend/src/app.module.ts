@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileModule } from './profile/profile.module';
 import { databaseConfig } from './ormconfig';
+import { AiGeminiModule } from './ai-gemini/ai-gemini.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { databaseConfig } from './ormconfig';
     UsersModule,
     AuthModule,
     ProfileModule,
+    AiGeminiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
