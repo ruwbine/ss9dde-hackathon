@@ -1,0 +1,104 @@
+#root{
+    background-color: #f5f5f5;
+    overflow: hidden;
+}
+.login {
+    overflow-y: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+     // Центрируем по вертикали
+     // Светлый фон
+  
+    .login-container {
+      position: relative;
+      background-color: white; // Белы'й фон для формы
+      padding: 40px; // Отступы
+      border-radius: 8px; // Закругленные углы
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); // Тень
+      width: 400px; // Ширина формы
+      text-align: left; // Выравнивание текста по центру
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      h1 {
+        font-size: 2rem; // Размер заголовка
+        margin-bottom: 1.5rem; // Отступ снизу
+        color: #333; // Цвет текста
+      }
+  
+      .login-sign-up {
+        margin-bottom: 1.5rem; // Отступ снизу
+        
+        .login-sign-up-container {
+            display: flex;
+            align-items:center;
+            p {
+                margin: 0; // Убираем отступы
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #666; // Цвет текста
+            }
+    
+            button {
+                border:none;
+                outline: none;
+                background-color:#fff; // Указатель при наведении
+                color: #2f70ff;
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                &:hover {
+                cursor: pointer;
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+          }
+        }
+      }
+      .login-action-container{
+        display: flex;
+        justify-content: space-between;
+        margin-top:20px;
+        button{
+            border:none;
+            outline: none;
+            background-color:#fff; // Указатель при наведении
+            color: #2f70ff;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            &:hover {
+            cursor: pointer;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            }
+        }
+      .login-inputs {
+        margin-bottom: 1rem;
+        max-width:370px;
+        display: flex;
+        flex-direction:column;
+        gap:10px; // Отступ снизу
+        input {
+          max-width:400px;
+          width:100%; // Ширина 100%
+          padding: 15px; // Отступы внутри
+          border: 1px solid #ccc; // Цвет рамки
+          border-radius: 5px; // Закругленные углы
+          margin-bottom: 1rem; // Отступ снизу
+          font-size: 1rem; // Размер текста
+        }
+      }
+  
+      .login-btn {
+        width: 100%; 
+        margin-top:20px;
+        padding:20px; // Отступы внутри
+        background-color: #2f70ff; // Цвет кнопки
+        color: white; // Цвет текста на кнопке
+        border: none; // Убираем рамку
+        border-radius: 12px; 
+        cursor: pointer; // Указатель при наведении
+        font-size:18px;
+        &:hover {
+          background-color:#2B73E6; // Цвет кнопки при наведении
+        }
+        
+      }
+    }
+  }
+  

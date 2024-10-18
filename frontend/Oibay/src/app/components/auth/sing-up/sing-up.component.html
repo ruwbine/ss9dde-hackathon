@@ -1,0 +1,32 @@
+<div class="login">
+    <div class="login-container">
+        <h1>
+            Регистрация
+        </h1>
+        <div class="login-sign-up">
+            <div class="login-sign-up-container">
+                <p>Уже есть аккаунт?</p>
+                <button [routerLink]="['/login']">
+                    Войти сейчас
+                 </button>
+            </div>
+        </div>
+        <div class="login-inputs">
+            <label for="">Имя пользователя</label>
+            <input type="text" placeholder="User123">
+            <label for="">Почта</label>
+            <input type="text" placeholder="example@gmail.com">
+            <label for="">Пароль</label>
+            <input type="text" placeholder="ABC@#$!12">
+        </div>
+        <div class="login-action-container">
+            <div class="login-remember-me">
+                Запомнить меня    
+            <input type="checkbox">
+            </div>
+        </div>
+        <button (click)="onRegister()" class="login-btn">
+            Войти
+        </button>
+    </div>
+</div>
