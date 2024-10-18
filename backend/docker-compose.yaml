@@ -1,0 +1,48 @@
+version: '3'
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z
+    volumes:
+      - ./data:/data
+    ports:
+      - "9000:9001"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: 'minio_user'
+      MINIO_ROOT_PASSWORD: 'minio_password'
+      MINIO_ADDRESS: ':9000'
+      MINIO_CONSOLE_ADDRESS: ':9001'
+    command: minio server /data
+  db:
+    image: postgres:16
+    container_name: decentrathon-database
+    restart: always
+    environment:
+      POSTGRES_DB: decentrathon-database
+      POSTGRES_NAME: decentrathon
+      POSTGRES_PASSWORD: 'zeliboba4242'
+    ports:
+      - "5432:5432"
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:latest
+#    container_name: zookeeper
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#      ZOOKEEPER_TICK_TIME: 2000
+#    ports:
+#      - "2181:2181"
+#  kafka:
+#    image: confluentinc/cp-kafka:latest
+#    container_name: kafka
+#    ports:
+#      - "9092:9092"
+#    environment:
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  keydb-cluster-1:
+    image: eqalpha/keydb:x86_64_v0.9.5
+    entrypoint: [ "keydb-server" ]
+    command: [ "/etc/keydb/redis.conf", "--port", "6379", "--multi-master", "yes", "--protected-mode", "no", "--bind", "0.0.0.0" ]
+    ports:
+      - "6379:6379"
