@@ -7,6 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileModule } from './profile/profile.module';
 import { databaseConfig } from './ormconfig';
+import { CourcesModule } from './courses/cources.module';
+import { ModulesModule } from './modules/modules.module';
+import { AssignmentModule } from './assignment/assignment.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { databaseConfig } from './ormconfig';
     UsersModule,
     AuthModule,
     ProfileModule,
+    CourcesModule,
+    ModulesModule,
+    AssignmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
