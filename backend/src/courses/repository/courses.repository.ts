@@ -1,12 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseEntity } from '../entities/course.entity';
-import { Repository } from 'typeorm';
-import { IRepository } from '../../common/interfaces/repository.interface';
+import {FindOptionsWhere, Repository} from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import {CreateCourseDto} from "../dto/create-course.dto";
+import {ITypeormRepository} from "../../common/interfaces/typeorm-repository.interface";
 
-export class CoursesRepository implements IRepository<CourseEntity> {
+export class CoursesRepository implements ITypeormRepository<CourseEntity> {
     constructor(
         @InjectRepository(CourseEntity)
         private readonly courseRepository: Repository<CourseEntity>
@@ -24,12 +24,12 @@ export class CoursesRepository implements IRepository<CourseEntity> {
     }
 
     // Поиск курсов по параметрам
-    async findByParams(params: Partial<CourseEntity>): Promise<CourseEntity[] | null> {
+    async findByParams(params: FindOptionsWhere<CourseEntity>): Promise<CourseEntity[] | null> {
         const courses = await this.courseRepository.find({ where: params });
         return courses ? courses : null;
     }
 
-    async findOneByParams(params: Partial<CourseEntity>): Promise<CourseEntity | null> {
+    async findOneByParams(params: FindOptionsWhere<CourseEntity>): Promise<CourseEntity | null> {
         const course = await this.courseRepository.findOne({ where: params });
         return course ? course : null;
     }

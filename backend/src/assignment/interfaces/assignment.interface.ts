@@ -3,7 +3,7 @@ import {IModule} from "../../modules/interfaces/module.interface";
 export class IAssignment {
     id: string;
     question: string;
-    answerOption: string[];
+    answerOptions: string[];
     correctAnswer: string;
     moduleId: string;
     module?: IModule;

@@ -1,46 +1,57 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ModuleEntity } from '../entities/module.entity';
-import { IRepository } from '../../common/interfaces/repository.interface';
+import {FindOptionsWhere, Repository} from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
+import {ITypeormRepository} from "../../common/interfaces/typeorm-repository.interface";
+import {ModuleEntity} from "../entities/module.entity";
+import {CreateModuleDto} from "../dto/create-module.dto";
+import {UpdateModuleDto} from "../dto/update-module.dto";
 
-@Injectable()
-export class ModuleRepository implements IRepository<ModuleEntity> {
+export class ModulesRepository implements ITypeormRepository<ModuleEntity> {
     constructor(
         @InjectRepository(ModuleEntity)
-        private readonly moduleRepository: Repository<ModuleEntity>,
+        private readonly courseRepository: Repository<ModuleEntity>
     ) {}
 
-    // Создание нового модуля
-    async create(moduleData: Partial<ModuleEntity>): Promise<ModuleEntity> {
-        const module = this.moduleRepository.create(moduleData);
-        return this.moduleRepository.save(module);
+    // Создание нового курса
+    async create(courseData: CreateModuleDto): Promise<ModuleEntity> {
+        const moduleEntity = this.courseRepository.create(courseData);
+        return this.courseRepository.save(moduleEntity);
     }
 
-    // Поиск модуля по ID
+    // Поиск курса по ID
     async findOne(id: string): Promise<ModuleEntity | null> {
-        return await this.moduleRepository.findOne({ where: { id } });
+        return await this.courseRepository.findOne({ where: { id } });
     }
 
-    // Поиск модулей по параметрам
-    async findByParams(params: Partial<ModuleEntity>): Promise<ModuleEntity[]> {
-        return await this.moduleRepository.find({ where: params });
+    // Поиск курсов по параметрам
+    async findByParams(params: FindOptionsWhere<ModuleEntity>): Promise<ModuleEntity[] | null> {
+        const courses = await this.courseRepository.find({ where: params });
+        return courses ? courses : null;
     }
 
-    // Обновление модуля по ID
-    async update(id: string, moduleData: Partial<ModuleEntity>): Promise<ModuleEntity | null> {
-        const module = await this.findOne(id);
-        if (!module) return null;
-
-        Object.assign(module, moduleData);
-        return this.moduleRepository.save(module);
+    async findOneByParams(params: FindOptionsWhere<ModuleEntity>): Promise<ModuleEntity | null> {
+        const course = await this.courseRepository.findOne({ where: params });
+        return course ? course : null;
     }
 
-    // Удаление модуля
+    async findAll(): Promise<ModuleEntity[]> {
+        return this.courseRepository.find();
+    }
+
     async remove(id: string): Promise<void> {
-        const module = await this.findOne(id);
-        if (module) {
-            await this.moduleRepository.remove(module);
+        const course = await this.findOne(id);
+        if (!course) {
+            throw new NotFoundException(`Cannot remove course with id: ${id}. Course not found`);
         }
+        await this.courseRepository.remove(course);
+    }
+
+    async update(id: string, data: UpdateModuleDto): Promise<ModuleEntity> {
+        const course = await this.findOne(id);
+        if (!course) {
+            throw new NotFoundException(`Cannot update course with id: ${id}. Course not found`);
+        }
+        Object.assign(course, data);
+        return this.courseRepository.save(course);
     }
 }

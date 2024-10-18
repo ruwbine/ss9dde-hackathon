@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import {CourseEntity} from "../../courses/entities/course.entity";
+import {AssignmentEntity} from "../../assignment/entities/assignment.entity";
 
 
 @Entity('modules')
