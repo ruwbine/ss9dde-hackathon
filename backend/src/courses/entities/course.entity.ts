@@ -19,6 +19,6 @@ export class CourseEntity implements ICourse {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => ModuleEntity, (module) => module.course)
+    @OneToMany(() => ModuleEntity, (module) => module.course, {cascade: true, eager: true, onDelete: 'CASCADE'})
     modules: ModuleEntity[];
 }

@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import {CourseEntity} from "../../courses/entities/course.entity";
 import {AssignmentEntity} from "../../assignment/entities/assignment.entity";
+import {IModule} from "../interfaces/module.interface";
 
 
 @Entity('modules')
-export class ModuleEntity {
+export class ModuleEntity implements IModule{
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -26,6 +27,7 @@ export class ModuleEntity {
     @ManyToOne(() => CourseEntity, (course) => course.modules)
     course: CourseEntity;
 
-    @OneToMany(() => AssignmentEntity, (assignment) => assignment.module)
+    @OneToMany(() => AssignmentEntity, (assignment) => assignment.module, {cascade: true, onDelete: 'CASCADE'})
     assignments: AssignmentEntity[];
+
 }

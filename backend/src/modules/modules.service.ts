@@ -3,6 +3,7 @@ import {CreateModuleDto} from "./dto/create-module.dto";
 import {ModuleEntity} from "./entities/module.entity";
 import {ModulesRepository} from "./repositories/modules.repository";
 import {UpdateModuleDto} from "./dto/update-module.dto";
+import {CoursesRepository} from "../courses/repository/courses.repository";
 
 
 @Injectable()
@@ -11,10 +12,17 @@ export class ModulesService implements OnModuleInit{
         console.log('Modules service implemented successfully');
     }
 
-    constructor(private readonly moduleRepository: ModulesRepository) {}
+    constructor(private readonly moduleRepository: ModulesRepository,
+    private readonly courseRepo: CoursesRepository) {}
 
     async create(createModuleDto: CreateModuleDto): Promise<ModuleEntity> {
-        return await this.moduleRepository.create(createModuleDto);
+        const {courseId} = createModuleDto;
+        const course = await this.courseRepo.findOne(courseId);
+        if(!course){
+            throw new NotFoundException(`Cannot attach module to course with id: ${courseId}. Not found`)
+        }
+        return await this.moduleRepository.create(createModuleDto)
+
     }
 
     async findById(id: string): Promise<ModuleEntity> {

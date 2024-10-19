@@ -11,5 +11,5 @@ export class CreateModuleDto {
 
     @IsUUID()
     @IsNotEmpty()
-    courseId: string;  // ID курса, которому принадлежит модуль
+    courseId: string;
 }

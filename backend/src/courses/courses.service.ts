@@ -12,7 +12,8 @@ export class CoursesService implements OnModuleInit {
     }
 
     constructor(private readonly coursesRepository: CoursesRepository) {}
-    // Получение курса по ID
+
+
     async findById(id: string): Promise<CourseEntity> {
         const course = await this.coursesRepository.findOne(id);
         if (!course) {
@@ -21,17 +22,17 @@ export class CoursesService implements OnModuleInit {
         return course;
     }
 
-    // Получение всех курсов
+
     async findAll(): Promise<CourseEntity[]> {
         return await this.coursesRepository.findAll();
     }
 
-    // Создание нового курса
+
     async create(createCourseDto: CreateCourseDto): Promise<CourseEntity> {
         return await this.coursesRepository.create(createCourseDto);
     }
 
-    // Обновление курса по ID
+
     async update(id: string, updateCourseDto: UpdateCourseDto): Promise<CourseEntity> {
         const course = await this.coursesRepository.update(id, updateCourseDto);
         if (!course) {
@@ -40,7 +41,6 @@ export class CoursesService implements OnModuleInit {
         return course;
     }
 
-    // Удаление курса по ID
     async remove(id: string): Promise<void> {
         await this.coursesRepository.remove(id);
     }

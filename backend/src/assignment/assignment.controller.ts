@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AssignmentService } from './assignment.service';
-import { CreateAssignmentDto } from './dto/create-assignment.dto';
-import { UpdateAssignmentDto } from './dto/update-assignment.dto';
+import {Controller, Post, Body, Param, HttpCode, HttpStatus, Get} from '@nestjs/common';
+import {AssignmentService} from "./services/assignment.service";
+import {CreateAssignmentDto} from "./dto/create-assignment.dto";
+import {ModuleEntity} from "../modules/entities/module.entity";
+import {AssignmentEntity} from "./entities/assignment.entity";
 
-@Controller('assignment')
+
+@Controller('assignments')
 export class AssignmentController {
-  constructor(private readonly assignmentService: AssignmentService) {}
+    constructor(private readonly assignmentService: AssignmentService) {}
 
-  @Post()
-  create(@Body() createAssignmentDto: CreateAssignmentDto) {
-    return this.assignmentService.create(createAssignmentDto);
-  }
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    async createAssignment(@Body() createAssignmentDto: CreateAssignmentDto): Promise<AssignmentEntity> {
+        return this.assignmentService.createAssignment(createAssignmentDto);
+    }
 
-  @Get()
-  findAll() {
-    return this.assignmentService.findAll();
-  }
+    @Get('module/:moduleId')
+    async getAssignmentsByModuleId(@Param('moduleId') moduleId: string): Promise<AssignmentEntity[]> {
+        return this.assignmentService.getAssignmentsByModuleId(moduleId);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.assignmentService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAssignmentDto: UpdateAssignmentDto) {
-    return this.assignmentService.update(+id, updateAssignmentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.assignmentService.remove(+id);
-  }
+    @Get(':assignmentId')
+    async getAssignmentById(@Param('assignmentId') assignmentId: string): Promise<AssignmentEntity> {
+        return this.assignmentService.getAssignmentById(assignmentId);
+    }
 }
