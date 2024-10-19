@@ -1,0 +1,70 @@
+// Sidebar.scss
+.sidebar {
+    width: 300px; // Width of sidebar
+    background-color: #fff; // Background color
+    color: white; // Text color
+    transition: width 0.3s ease;
+    height:100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    &.collapsed {
+      width: 80px; // Width when collapsed
+    }
+  
+    .logo-container {
+      margin-top:20px;
+      display: flex;
+      justify-content:left;
+      align-items:flex-end;
+      .toggle-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        img {
+          width: 100%; // Adjust as needed
+          height:60px;
+        }
+      }
+    }
+  
+    .nav {
+      ul {
+        left:0;
+        list-style: none;
+        padding: 0;
+        li {
+            display: flex;
+            flex-direction: column;
+            align-items:flex-start;
+            justify-content:flex-start;
+            padding:20px 20px ;
+          a {
+            display: flex;
+            align-items: center;
+            justify-content:flex-start;
+            color:#000;
+            text-decoration: none;
+            display: flex;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            align-items: left;
+            justify-content: left;
+            transition: background 0.3s ease;
+
+            &.active {
+              color:#000;// Active link color
+            }
+  
+            .icon {
+              font-size:20px;
+              margin-right: 0.5rem; // Space between icon and text
+              transition: margin-right 0.3s ease;
+            }
+  
+            .link-text {
+              transition: opacity 0.3s ease;
+            }
+          }
+        }
+      }
+    }
+  }
+  
