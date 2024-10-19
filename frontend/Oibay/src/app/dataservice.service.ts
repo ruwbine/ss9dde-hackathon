@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +9,14 @@ import { Router } from '@angular/router';
 export class DataserviceService {
 
   constructor(private authService: AuthService, private router: Router) { }
-  canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {  // Проверка, авторизован ли пользователь
-      return true;  // Разрешить доступ
-    } else {
-      this.router.navigate(['/login']);  // Перенаправить на страницу логина
-      return false;  // Запретить доступ
-    }
+  private sidebarState = new BehaviorSubject<boolean>(false);
+  
+  // Observable для подписки на состояние сайдбара
+  public sidebarState$ = this.sidebarState.asObservable();
+
+  // Метод для изменения состояния сайдбара
+  toggleSidebar() {
+    const currentState = this.sidebarState.getValue();
+    this.sidebarState.next(!currentState);
   }
 }

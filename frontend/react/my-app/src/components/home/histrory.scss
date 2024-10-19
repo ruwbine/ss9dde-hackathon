@@ -1,0 +1,59 @@
+.container {
+    display: flex;
+    padding: 20px;
+  }
+  
+  .sidebar {
+    width: 250px;
+    margin-right: 20px;
+  }
+  
+  .tableContainer {
+    flex: 1;
+    border: 2px solid #2f70ff;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .th,
+  .td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 2px solid #2f70ff;
+  }
+  
+  .td {
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .link {
+    color: #2f70ff;
+    text-decoration: none;
+  }
+  
+  .deadline {
+    &.red {
+      color: red;
+    }
+    &.black {
+      color: black;
+    }
+  }
+  
+  .status {
+    &.completed {
+      color: green;
+    }
+    &.unfinished {
+      color: red;
+    }
+    &.inProgress {
+      color: orange;
+    }
+  }
+  

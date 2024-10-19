@@ -3,13 +3,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../../../auth.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthResponse } from './interface';
+ // Импортируем интерфейс
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule,RouterModule,CommonModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule],
   templateUrl: './signup.component.html',
-  styleUrl: './signup.component.scss'
+  styleUrls: ['./signup.component.scss']
 })
 export class SignupComponent {
   registerForm: FormGroup;
@@ -35,21 +37,32 @@ export class SignupComponent {
     return this.registerForm.get('password'); // Получаем поле password
   }
 
-  async onRegister() {
+  onRegister() {
     if (this.registerForm.valid) {
-      try {
-        const { username, email, password } = this.registerForm.value;
-        const response = await this.authService.register(username, email, password);
-        console.log('Регистрация прошла успешно:', response);
-        this.authService.saveToken(response.token);
-        // Дополнительные действия при успешной регистрации, например, перенаправление
-      } catch (error: unknown) {
-        const errorMessage = (error as Error).message || 'Неизвестная ошибка';
-        console.error('Ошибка регистрации:', errorMessage);
-        alert(`Ошибка: ${errorMessage}`);
-      }
-    } else {
-      alert('Пожалуйста, исправьте ошибки в форме.');
-    }
+      const { username, email, password } = this.registerForm.value;
+
+      // Регистрация пользователя
+      // this.authService.register(username, email, password).subscribe({
+      //   next: (response: AuthResponse) => { // Указываем тип ответа
+      //     // Предполагаем, что ответ имеет структуру { success: true, data: [{ accessToken: token }] }
+      //     // if (response.success && response.data.length > 0) {
+      //     //   const token = response.data[0].accessToken; // Извлекаем токен
+      //     //   console.log('Регистрация прошла успешно:', response);
+      //     //   this.authService.saveToken(token); // Сохраняем токен
+      //     //   // Дополнительные действия при успешной регистрации, например, перенаправление
+      //     // } else {
+      //     //   alert('Ошибка регистрации: Неверный ответ от сервера.');
+      //     // }
+      //   },
+    //     error: (error: { message: string }) => {
+    //       const errorMessage = error.message || 'Неизвестная ошибка';
+    //       console.error('Ошибка регистрации:', errorMessage);
+    //       alert(`Ошибка: ${errorMessage}`);
+    //     }
+    //   });
+    // } else {
+    //   alert('Пожалуйста, исправьте ошибки в форме.');
+    // }
+   }
   }
 }
