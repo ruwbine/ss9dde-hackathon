@@ -1,5 +1,5 @@
 export interface TextRequest {
-    originalText: string; 
+    assignmentId: string;
 }
 
 export interface Explanation {

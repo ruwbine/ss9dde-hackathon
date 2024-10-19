@@ -3,6 +3,7 @@ import {IAssignmentQuestion} from "./assignment-question.interface";
 
 export class IAssignment {
     id: string;
+    title: string;
     questions: IAssignmentQuestion[]
     description: string;
     moduleId: string;

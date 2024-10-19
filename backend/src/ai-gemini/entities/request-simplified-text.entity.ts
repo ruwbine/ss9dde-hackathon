@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class RequestSimolifiedEntity {
@@ -9,4 +9,6 @@ export class RequestSimolifiedEntity {
     @Column('text')
     simplifiedText:string;
 
+    @CreateDateColumn()
+    createdAt: Date;
 }

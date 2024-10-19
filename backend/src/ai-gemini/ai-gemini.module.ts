@@ -10,6 +10,7 @@ import { Question } from './entities/request-quiz-questions.entity';
 import { QuestionOption } from './entities/request-quiz-options.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { ResponseRepository } from './repository/request.repository';
+import { AssignmentModule } from 'src/assignment/assignment.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { ResponseRepository } from './repository/request.repository';
       ExplanationEntity
   ]),
     RabbitmqModule,
-    HttpModule
+    HttpModule,
+    AssignmentModule,
   ],
   providers: [
     AiGeminiService,

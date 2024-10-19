@@ -1,5 +1,3 @@
-// src/entities/assignment.entity.ts
-
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -21,13 +19,11 @@ export class AssignmentEntity implements IAssignment {
     id: string;
 
     @Column()
-    description: string;
-
-    @Column('simple-array')
-    answerOptions: string[];
+    title: string;
 
     @Column()
-    correctAnswer: string;
+    description: string;
+
 
     @Column()
     moduleId: string;

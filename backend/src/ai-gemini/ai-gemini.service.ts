@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { HttpException, Inject, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy } from "@nestjs/microservices";
 import { Observable, finalize, firstValueFrom, interval, take, takeUntil, tap } from "rxjs";
 import { IQuiz, TextRequest, TextResponse } from "./interfaces/request.interface";
 import { RequestSchema } from "./schemas/request.schema";
 import { ResponseRepository } from "./repository/request.repository";
+import { AssignmentService } from "src/assignment/services/assignment.service";
 
 @Injectable()
 export class AiGeminiService {
@@ -20,6 +21,7 @@ export class AiGeminiService {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly assigmentService:AssignmentService,
     private readonly responseRepository: ResponseRepository,
     @Inject('REQUEST_SERVICE') private readonly client: ClientProxy, 
   ) {
@@ -32,6 +34,8 @@ export class AiGeminiService {
 
     this.genAI = new GoogleGenerativeAI(this.apiKey);
   }
+
+
 
 
   async addToQueue(request: TextRequest): Promise<void> {
@@ -69,7 +73,7 @@ private async processQueue(): Promise<void> {
         const request = this.requestQueue.shift();  
         if (request) {
           try {
-            const response = await this.handleRequest(request);  
+            const response = await this.handleRequest(request.assignmentId);  
             this.logger.log('Processed request:', response);
             this.requestsInCurrentMinute++;  
           } catch (error) {
@@ -82,6 +86,7 @@ private async processQueue(): Promise<void> {
         }
       });
 }
+
 
 private resetRequestsPerMinute(): Promise<void> {
     return new Promise((resolve) => {
@@ -102,9 +107,19 @@ private queueEmpty$(): Observable<boolean> {
     });
 }
 
-async handleRequest(request: TextRequest): Promise<TextResponse> {
-    this.logger.log('Received request:', request);
-    const prompt = this.generatePrompt(request.originalText);
+async handleRequest(assignmentId: string): Promise<TextResponse> {
+    this.logger.log('Fetching assignment:', assignmentId);
+
+    const assignment = await this.assigmentService.getAssignmentById(assignmentId);
+
+    if (!assignment) {
+        throw new HttpException('Assignment not found', HttpStatus.NOT_FOUND);
+    }
+
+    this.logger.log('Using assignment description for prompt:', assignment.description);
+    
+   
+    const prompt = this.generatePrompt(assignment.description);
     this.logger.log('Generated prompt:', prompt);
 
     const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -119,13 +134,14 @@ async handleRequest(request: TextRequest): Promise<TextResponse> {
             explanations: this.extractExplanations(generatedText),
             quizQuestions: this.extractQuizQuestions(generatedText),
         });
+
         if (!parsedResult.explanations || parsedResult.explanations.length < 2) {
             throw new HttpException('At least two explanations are required', 400);
         }
 
         const quizQuestions: IQuiz = {
-            title: "Quiz 1",
-            description: "Description for Quiz 1",
+            title: assignment.title || "Quiz",
+            description: assignment.description || "Description for Quiz",
             questions: (parsedResult.quizQuestions || []).map((questionText: string) => ({
                 text: questionText,
                 options: [
@@ -140,21 +156,22 @@ async handleRequest(request: TextRequest): Promise<TextResponse> {
             simplifiedText: parsedResult.simplifiedText,
             explanations: parsedResult.explanations,
             quizQuestions: [quizQuestions],
-          });
-          const response: TextResponse = {
+        });
+
+        const response: TextResponse = {
             simplifiedText: parsedResult.simplifiedText,
             explanations: parsedResult.explanations,
             quizQuestions: [quizQuestions], 
-          };
+        };
     
-          return response;
-    
-  
+        return response;
+
     } catch (error) {
-      this.logger.error('Error processing text:', error);
-      throw new HttpException('Error processing text', 500);
+        this.logger.error('Error processing text:', error);
+        throw new HttpException('Error processing text', 500);
     }
-  }
+}
+
   
   private extractSection(generatedText: string, sectionTitle: string): string {
     const sectionStart = generatedText.indexOf(`## ${sectionTitle}`);
@@ -220,17 +237,26 @@ async handleRequest(request: TextRequest): Promise<TextResponse> {
 //     };
 //   }
   
-  private generatePrompt(originalText: string): string {
-    return `Please simplify the following text and provide detailed explanations for at least four complex terms related to original text:\n\n${originalText} The explanations should be in the following format:
-  
+private generatePrompt(description: string): string {
+    return `Please simplify the following text and provide detailed explanations for at least four complex terms related to the original text:\n\n${description}. The explanations should be in the following format:
+
   - **Term 1**: Description of term 1
   - **Term 2**: Description of term 2
   - **Term 3**: Description of term 3
   - **Term 4**: Description of term 4
   
-  Make sure to strictly adhere to this format. Additionally, generate at least ten quiz questions based on the content of the simplified text.
-  
-  Here is the original text:\n\n${originalText}`;
+  Additionally, generate at least ten quiz questions based on the content of the simplified text.
+
+  Here is the original text:\n\n${description}`;
+}
+
+ 
+  async getResponseDataById(id: string): Promise<any> {
+    return await this.responseRepository.getResponseDataById(id);
   }
-  
+
+  async getAllIds(): Promise<string[]> {
+    return await this.responseRepository.getAllIds();
+  }
+
 }
