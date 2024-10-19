@@ -1,8 +1,8 @@
-export interface IModule {
+    export interface IModule {
     id: string;
     title: string;
     content: string;
-    courseId: string; 
+    courseId: string;
     createdAt: Date;
     updatedAt: Date;
 }

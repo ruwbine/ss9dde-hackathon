@@ -1,16 +1,28 @@
-import {Body, Controller, Post, UseGuards} from "@nestjs/common";
-import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {Controller, Post, Body, Param, HttpCode, HttpStatus, Get} from '@nestjs/common';
+import {AssignmentService} from "./services/assignment.service";
 import {CreateAssignmentDto} from "./dto/create-assignment.dto";
-import {AssignmentService} from "./assignment.service";
+import {ModuleEntity} from "../modules/entities/module.entity";
+import {AssignmentEntity} from "./entities/assignment.entity";
 
-@UseGuards(JwtAuthGuard)
-@Controller('/assignment')
+
+@Controller('assignments')
 export class AssignmentController {
-    constructor(
-        private readonly assignmentService: AssignmentService,
-    ) {
-    }
+    constructor(private readonly assignmentService: AssignmentService) {}
+
     @Post()
-    async create(@Body() createAssignmentDto: CreateAssignmentDto) {
+    @HttpCode(HttpStatus.CREATED)
+    async createAssignment(@Body() createAssignmentDto: CreateAssignmentDto): Promise<AssignmentEntity> {
+        return this.assignmentService.createAssignment(createAssignmentDto);
+    }
+
+    @Get('module/:moduleId')
+    async getAssignmentsByModuleId(@Param('moduleId') moduleId: string): Promise<AssignmentEntity[]> {
+        return this.assignmentService.getAssignmentsByModuleId(moduleId);
+    }
+
+
+    @Get(':assignmentId')
+    async getAssignmentById(@Param('assignmentId') assignmentId: string): Promise<AssignmentEntity> {
+        return this.assignmentService.getAssignmentById(assignmentId);
     }
 }
