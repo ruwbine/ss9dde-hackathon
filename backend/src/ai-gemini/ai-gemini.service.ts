@@ -4,8 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { ClientProxy } from "@nestjs/microservices";
 import { Observable, finalize, firstValueFrom, interval, take, takeUntil, tap } from "rxjs";
 import { IQuiz, TextRequest, TextResponse } from "./interfaces/request.interface";
-import { z } from "zod";
-import { QuizDataSchema, RequestSchema } from "./schemas/request.schema";
+import { RequestSchema } from "./schemas/request.schema";
 
 @Injectable()
 export class AiGeminiService {
