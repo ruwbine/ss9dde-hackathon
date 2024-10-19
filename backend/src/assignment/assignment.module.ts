@@ -26,5 +26,6 @@ import {AssignmentQuestionOptionService} from "./services/assignment-question-op
   ],
   controllers: [AssignmentController, AssignmentSubmissionController],
   providers: [AssignmentService, AssignmentSubmissionService, AssignmentQuestionService, AssignmentQuestionOptionService],
+  exports:[AssignmentService, AssignmentSubmissionService, AssignmentQuestionService, AssignmentQuestionOptionService]
 })
 export class AssignmentModule {}
