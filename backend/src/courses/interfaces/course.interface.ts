@@ -6,5 +6,5 @@ export interface ICourse {
     description: string;
     createdAt: Date;
     updatedAt: Date;
-    modules?: IModule[]; // Модули, связанные с курсом
+    modules?: IModule[];
 }

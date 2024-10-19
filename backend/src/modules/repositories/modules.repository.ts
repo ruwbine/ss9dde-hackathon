@@ -9,33 +9,34 @@ import {UpdateModuleDto} from "../dto/update-module.dto";
 export class ModulesRepository implements ITypeormRepository<ModuleEntity> {
     constructor(
         @InjectRepository(ModuleEntity)
-        private readonly courseRepository: Repository<ModuleEntity>
+        private readonly moduleRepository: Repository<ModuleEntity>
     ) {}
 
-    // Создание нового курса
-    async create(courseData: CreateModuleDto): Promise<ModuleEntity> {
-        const moduleEntity = this.courseRepository.create(courseData);
-        return this.courseRepository.save(moduleEntity);
+
+
+    async create(moduleDto: CreateModuleDto): Promise<ModuleEntity> {
+        const moduleEntity = this.moduleRepository.create(moduleDto);
+        return this.moduleRepository.save(moduleEntity);
     }
 
-    // Поиск курса по ID
+
     async findOne(id: string): Promise<ModuleEntity | null> {
-        return await this.courseRepository.findOne({ where: { id } });
+        return await this.moduleRepository.findOne({ where: { id } });
     }
 
-    // Поиск курсов по параметрам
+
     async findByParams(params: FindOptionsWhere<ModuleEntity>): Promise<ModuleEntity[] | null> {
-        const courses = await this.courseRepository.find({ where: params });
+        const courses = await this.moduleRepository.find({ where: params });
         return courses ? courses : null;
     }
 
     async findOneByParams(params: FindOptionsWhere<ModuleEntity>): Promise<ModuleEntity | null> {
-        const course = await this.courseRepository.findOne({ where: params });
+        const course = await this.moduleRepository.findOne({ where: params });
         return course ? course : null;
     }
 
     async findAll(): Promise<ModuleEntity[]> {
-        return this.courseRepository.find();
+        return this.moduleRepository.find();
     }
 
     async remove(id: string): Promise<void> {
@@ -43,7 +44,7 @@ export class ModulesRepository implements ITypeormRepository<ModuleEntity> {
         if (!course) {
             throw new NotFoundException(`Cannot remove course with id: ${id}. Course not found`);
         }
-        await this.courseRepository.remove(course);
+        await this.moduleRepository.remove(course);
     }
 
     async update(id: string, data: UpdateModuleDto): Promise<ModuleEntity> {
@@ -52,6 +53,6 @@ export class ModulesRepository implements ITypeormRepository<ModuleEntity> {
             throw new NotFoundException(`Cannot update course with id: ${id}. Course not found`);
         }
         Object.assign(course, data);
-        return this.courseRepository.save(course);
+        return this.moduleRepository.save(course);
     }
 }

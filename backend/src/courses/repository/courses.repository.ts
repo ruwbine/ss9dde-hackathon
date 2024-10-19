@@ -12,18 +12,18 @@ export class CoursesRepository implements ITypeormRepository<CourseEntity> {
         private readonly courseRepository: Repository<CourseEntity>
     ) {}
 
-    // Создание нового курса
+
     async create(courseData: CreateCourseDto): Promise<CourseEntity> {
         const courseEntity = this.courseRepository.create(courseData);
         return this.courseRepository.save(courseEntity);
     }
 
-    // Поиск курса по ID
+
     async findOne(id: string): Promise<CourseEntity | null> {
         return await this.courseRepository.findOne({ where: { id } });
     }
 
-    // Поиск курсов по параметрам
+
     async findByParams(params: FindOptionsWhere<CourseEntity>): Promise<CourseEntity[] | null> {
         const courses = await this.courseRepository.find({ where: params });
         return courses ? courses : null;
