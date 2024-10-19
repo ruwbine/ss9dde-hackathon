@@ -1,8 +1,6 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { AiGeminiService } from '../ai-gemini.service';
-import { TextRequest, TextResponse } from '../interfaces/request.interface';
-import { Logger } from '@nestjs/common';
 
 @Processor('text_processing_queue')
 export class TextProcessingConsumer {

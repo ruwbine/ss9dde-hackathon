@@ -7,6 +7,10 @@ import { UsersModule } from './users/users.module';
 import { ProfileModule } from './profile/profile.module';
 import { databaseConfig } from './ormconfig';
 import {RabbitmqModule} from "./rabbitmq/rabbitmq.module";
+import { CoursesModule } from './courses/courses.module';
+import { ModulesModule } from './modules/modules.module';
+import { AssignmentModule } from './assignment/assignment.module';
+import { ParagraphsModule } from './paragraphs/paragraphs.module';
 import { AiGeminiModule } from './ai-gemini/ai-gemini.module';
 import { ConfigModule } from '@nestjs/config';
 
@@ -20,6 +24,10 @@ import { ConfigModule } from '@nestjs/config';
     UsersModule,
     AuthModule,
     ProfileModule,
+    CoursesModule,
+    ModulesModule,
+    AssignmentModule,
+    ParagraphsModule,
     AiGeminiModule,
   ],
   controllers: [AppController],

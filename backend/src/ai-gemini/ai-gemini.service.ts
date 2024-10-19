@@ -5,6 +5,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { Observable, finalize, firstValueFrom, interval, take, takeUntil, tap } from "rxjs";
 import { IQuiz, TextRequest, TextResponse } from "./interfaces/request.interface";
 import { RequestSchema } from "./schemas/request.schema";
+import { ResponseRepository } from "./repository/request.repository";
 
 @Injectable()
 export class AiGeminiService {
@@ -19,6 +20,7 @@ export class AiGeminiService {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly responseRepository: ResponseRepository,
     @Inject('REQUEST_SERVICE') private readonly client: ClientProxy, 
   ) {
     this.baseUrl = this.configService.get<string>('BASE_URL') || '';
@@ -104,40 +106,49 @@ async handleRequest(request: TextRequest): Promise<TextResponse> {
     this.logger.log('Received request:', request);
     const prompt = this.generatePrompt(request.originalText);
     this.logger.log('Generated prompt:', prompt);
-  
+
     const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-  
+
     try {
-      const result = await model.generateContent(prompt);
-      const generatedText = result.response.text();
-      this.logger.log('Generated content:', generatedText);
-  
-      const parsedResult = RequestSchema.parse({
-        simplifiedText: this.extractSection(generatedText, 'Simplified Text'),
-        explanations: this.extractExplanations(generatedText),
-        quizQuestions: this.extractQuizQuestions(generatedText),
-      });
-  
-      const quizQuestions: IQuiz = {
-        title: "Quiz 1",
-        description: "Description for Quiz 1",
-        questions: parsedResult.quizQuestions.map((questionText: string) => ({
-            text: questionText,
-            options: [
-                { text: 'Option 1', isCorrect: false },
-                { text: 'Option 2', isCorrect: true }
-            ]
-        })),
-        isCompleted: false,
-    };
+        const result = await model.generateContent(prompt);
+        const generatedText = result.response.text();
+        this.logger.log('Generated content:', generatedText);
 
-    const response: TextResponse = {
-        simplifiedText: parsedResult.simplifiedText,
-        explanations: parsedResult.explanations,
-        quizQuestions: [quizQuestions],  // Wrap in an array if you expect multiple quizzes
-    };
+        const parsedResult = RequestSchema.parse({
+            simplifiedText: this.extractSection(generatedText, 'Simplified Text'),
+            explanations: this.extractExplanations(generatedText),
+            quizQuestions: this.extractQuizQuestions(generatedText),
+        });
+        if (!parsedResult.explanations || parsedResult.explanations.length < 2) {
+            throw new HttpException('At least two explanations are required', 400);
+        }
 
-    return response;
+        const quizQuestions: IQuiz = {
+            title: "Quiz 1",
+            description: "Description for Quiz 1",
+            questions: (parsedResult.quizQuestions || []).map((questionText: string) => ({
+                text: questionText,
+                options: [
+                    { text: 'Option 1', isCorrect: false },
+                    { text: 'Option 2', isCorrect: true }
+                ]
+            })),
+            isCompleted: false,
+        };
+
+        await this.responseRepository.saveResponseData({
+            simplifiedText: parsedResult.simplifiedText,
+            explanations: parsedResult.explanations,
+            quizQuestions: [quizQuestions],
+          });
+          const response: TextResponse = {
+            simplifiedText: parsedResult.simplifiedText,
+            explanations: parsedResult.explanations,
+            quizQuestions: [quizQuestions], 
+          };
+    
+          return response;
+    
   
     } catch (error) {
       this.logger.error('Error processing text:', error);
@@ -169,6 +180,8 @@ async handleRequest(request: TextRequest): Promise<TextResponse> {
       }
       return undefined;
     }).filter((explanation): explanation is { term: string; description: string } => Boolean(explanation));
+  
+    this.logger.log('Extracted explanations:', explanations);
   
     return explanations;
   }
