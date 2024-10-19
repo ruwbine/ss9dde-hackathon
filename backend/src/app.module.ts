@@ -11,6 +11,7 @@ import {RabbitmqModule} from "./rabbitmq/rabbitmq.module";
 import { CoursesModule } from './courses/courses.module';
 import { ModulesModule } from './modules/modules.module';
 import { AssignmentModule } from './assignment/assignment.module';
+import { ParagraphsModule } from './paragraphs/paragraphs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AssignmentModule } from './assignment/assignment.module';
     CoursesModule,
     ModulesModule,
     AssignmentModule,
+    ParagraphsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
