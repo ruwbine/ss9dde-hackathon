@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Question } from "./request-quiz-questions.entity";
+import { ExplanationEntity } from "./requests-explonation.entity";
  
 
 @Entity()
@@ -10,7 +11,7 @@ export class Quiz {
     @Column()
     title: string;
 
-    @Column({ type: 'text', nullable: true }) 
+    @Column({ type: 'text', nullable: true })
     description: string;
 
     @Column({ default: false })
@@ -18,4 +19,7 @@ export class Quiz {
 
     @OneToMany(() => Question, question => question.quiz, { cascade: true })
     questions: Question[];
+
+    @OneToMany(() => ExplanationEntity, explanation => explanation.id, { cascade: true })
+    explanations: ExplanationEntity[];
 }

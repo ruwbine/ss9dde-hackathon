@@ -1,6 +1,3 @@
-export interface TextRequest {
-    assignmentId: string;
-}
 
 export interface Explanation {
     term: string; 
@@ -8,7 +5,6 @@ export interface Explanation {
 }
   
 export interface TextResponse {
-    simplifiedText: string; 
     explanations: Explanation[]; 
     quizQuestions: IQuiz[]; 
 }
@@ -30,7 +26,7 @@ export interface IOption {
     title: string;
     description: string;          
     questions: IQuestion[]; 
-    isCompleted: boolean;
+    isCompleted: boolean; 
   }
   
   export interface IAnswer {

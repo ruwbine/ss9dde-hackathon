@@ -1,27 +1,8 @@
-import { IsString, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class TextRequest {
   @IsString()
-  originalText: string; 
+  @IsNotEmpty()
+  textForQuiz: string;
 }
 
-export class Explanation {
-  @IsString()
-  term: string; 
-
-  @IsString()
-  description: string; 
-}
-
-export class TextResponse {
-  @IsString()
-  simplifiedText: string; 
-
-  @IsArray()
-  explanations: Explanation[]; 
-
-  @IsArray()
-  @IsString({ each: true }) 
-  quizQuestions: string[]; 
-
-}
