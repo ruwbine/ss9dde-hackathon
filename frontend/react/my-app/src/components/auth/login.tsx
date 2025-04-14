@@ -3,14 +3,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
 import { useForm } from 'react-hook-form';
+import {Axios} from 'axios';
 import './login.scss';
+
+const axios = new Axios();
 
 const Login: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate(); 
   
   const onLogin = (data: any) => {
-    console.log('Login data:', data);
+    axios.post('localhost:3000/auth/login', {
+      data
+    })
+    .then((res) => res.json())
+    .catch(() => console.error('Something went wrong via login', ))
   };
 
   return (

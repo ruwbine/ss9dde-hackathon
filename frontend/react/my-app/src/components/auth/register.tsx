@@ -16,19 +16,19 @@ const Register: React.FC = () => {
   return (
     <div className="login">
       <div className="login-container">
-        <h1>Регистрация</h1>
+        <h1>Register</h1>
         <div className="login-sign-up">
           <div className="login-sign-up-container">
-            <p>Уже есть аккаунт?</p>
+            <p>Already have an account?</p>
             <button onClick={() =>navigate('/auth/login')}>
-              Войти сейчас
+              Join now
             </button>
           </div>
         </div>
         <form onSubmit={handleSubmit(onRegister)}>
           <div className="login-inputs">
             {/* Поле для ввода имени пользователя */}
-            <label htmlFor="username">Имя пользователя</label>
+            <label htmlFor="username">Username</label>
             <input
               id="username"
               type="text"
@@ -43,7 +43,7 @@ const Register: React.FC = () => {
             )}
 
             {/* Поле для ввода email */}
-            <label htmlFor="email">Почта</label>
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
@@ -58,7 +58,7 @@ const Register: React.FC = () => {
             )}
 
             {/* Поле для ввода пароля */}
-            <label htmlFor="password">Пароль</label>
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
