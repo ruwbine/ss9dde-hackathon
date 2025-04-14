@@ -28,7 +28,7 @@ const Login: React.FC = () => {
           <div className="subtitle">Hi, welcome back👋</div>
           <div className="login-sign-up">
             <div className="login-sign-up-container">
-              <p>Новый пользователь?</p>
+              <p>New here?</p>
               <button onClick={() => navigate('/auth/registration')}>
                 Создать учетную запись
               </button>
