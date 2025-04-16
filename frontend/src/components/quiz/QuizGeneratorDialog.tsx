@@ -9,9 +9,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { QuizView } from "./QuizView";
+import { toast } from "sonner";
 
 type QuestionType = "single" | "multiple" | "true_false";
 
@@ -23,30 +30,56 @@ export function QuizGeneratorDialog() {
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
+    if (!textForQuiz.trim()) {
+      toast.error("Введите тему или учебный текст");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3050/ai-gemini/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           QuestionType: questionType,
           textForQuiz: textForQuiz,
         }),
       });
 
+      if (!res.ok) {
+        throw new Error("Сервер вернул ошибку");
+      }
+
       const data = await res.json();
+      console.log(data);
+
+      if (!data.quizQuestions[0] || !data.quizQuestions[0].questions?.length) {
+        throw new Error("Некорректный ответ от сервера");
+      }
+
       setGeneratedQuiz(data);
-    } catch (error) {
-      console.error("Ошибка генерации:", error);
+      toast.success("Квиз успешно сгенерирован!");
+    } catch (error: any) {
+      toast.error("Ошибка генерации: " + (error.message || "Неизвестная ошибка"));
     } finally {
       setLoading(false);
     }
   };
 
+  const resetState = () => {
+    setTextForQuiz("");
+    setQuestionType("single");
+    setGeneratedQuiz(null);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) resetState();
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">Сгенерировать квиз</Button>
       </DialogTrigger>
@@ -59,24 +92,28 @@ export function QuizGeneratorDialog() {
         {!generatedQuiz && (
           <div className="space-y-4">
             <Input
-              placeholder="Введите тему или учебный текст"
+              placeholder="Введите тему или текст"
               value={textForQuiz}
               onChange={(e) => setTextForQuiz(e.target.value)}
               disabled={loading}
             />
 
-            <Select value={questionType} onValueChange={(val) => setQuestionType(val as QuestionType)}>
+            <Select
+              value={questionType}
+              onValueChange={(val) => setQuestionType(val as QuestionType)}
+              disabled={loading}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Выберите тип вопроса" />
+                <SelectValue placeholder="Тип вопроса" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="true_false">True / False</SelectItem>
-                <SelectItem value="single">Один правильный</SelectItem>
-                <SelectItem value="multiple">Несколько правильных</SelectItem>
+                <SelectItem value="single">Один верный</SelectItem>
+                <SelectItem value="multiple">Несколько верных</SelectItem>
               </SelectContent>
             </Select>
 
-            <Button onClick={handleGenerate} disabled={loading}>
+            <Button onClick={handleGenerate} disabled={loading} className="w-full">
               {loading ? "Генерация..." : "Сгенерировать"}
             </Button>
           </div>
@@ -84,8 +121,11 @@ export function QuizGeneratorDialog() {
 
         {generatedQuiz && (
           <div className="mt-4">
-            <QuizView quiz={generatedQuiz.quiz} explanations={generatedQuiz.explanations} />
-            <Button className="mt-4" variant="secondary" onClick={() => setGeneratedQuiz(null)}>
+            <QuizView
+              quizQuestions={generatedQuiz.quizQuestions}
+              explanations={generatedQuiz.explanations}
+            />
+            <Button className="mt-4" variant="secondary" onClick={resetState}>
               Сгенерировать другой
             </Button>
           </div>

@@ -24,20 +24,22 @@ interface Explanation {
 }
 
 interface Props {
-  quiz: QuizData;
+  quizQuestions: QuizData;
   explanations: Explanation[];
 }
 
-export function QuizView({ quiz, explanations }: Props) {
+export function QuizView({ quizQuestions, explanations }: Props) {
+  
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{quiz.title}</h1>
-        <p className="text-muted-foreground mt-1">{quiz.description}</p>
+        <h1 className="text-2xl font-bold">{quizQuestions[0].title}</h1>
+        <p className="text-muted-foreground mt-1">{quizQuestions[0].description}</p>
       </div>
 
       <div className="space-y-6">
-        {quiz.questions.map((q, idx) => (
+        {quizQuestions[0].questions.map((q, idx) => (
           <QuizQuestion key={idx} index={idx + 1} question={q} />
         ))}
       </div>

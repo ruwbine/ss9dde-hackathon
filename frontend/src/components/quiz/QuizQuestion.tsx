@@ -1,5 +1,6 @@
-import { QuizOption as QuizOptionType } from "./QuizView";
 import { QuizOption } from "./QuizOption";
+import { QuizOption as QuizOptionType } from "./QuizView";
+
 
 interface Props {
   index: number;
