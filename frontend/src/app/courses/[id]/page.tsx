@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { IModule } from "@/types/module";
 import { ModuleList } from "@/components/module/ModuleList";
 import { CreateModuleDialog } from "@/components/module/CreateModuleDialog";
+import { QuizGeneratorDialog } from "@/components/quiz/QuizGeneratorDialog";
 
 export default function CourseDetailPage() {
   const { id } = useParams();
@@ -29,6 +30,10 @@ export default function CourseDetailPage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Модули курса</h1>
+          <div className="flex justify-end mt-8">
+            <QuizGeneratorDialog />
+          </div>
+
         <CreateModuleDialog courseId={id as string} onCreated={loadModules} />
       </div>
       <ModuleList modules={modules} onDelete={handleDelete} />
