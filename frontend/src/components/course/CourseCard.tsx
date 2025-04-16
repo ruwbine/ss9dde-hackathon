@@ -9,6 +9,7 @@ import Link from "next/link";
 export interface ICourse {
   id: string;
   title: string;
+  description: string;
   subject: string;
   isFavorite: boolean;
 }
