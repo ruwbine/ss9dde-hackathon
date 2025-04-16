@@ -32,7 +32,7 @@ export function QuizView({ quizQuestions, explanations }: Props) {
   
 
   return (
-    <div className="space-y-6">
+    <div className="max-h-[calc(100vh-40px)] overflow-y-auto px-2">
       <div>
         <h1 className="text-2xl font-bold">{quizQuestions[0].title}</h1>
         <p className="text-muted-foreground mt-1">{quizQuestions[0].description}</p>
