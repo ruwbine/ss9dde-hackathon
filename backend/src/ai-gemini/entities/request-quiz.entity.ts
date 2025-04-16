@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Question } from "./request-quiz-questions.entity";
 import { ExplanationEntity } from "./requests-explonation.entity";
+import { QuizResult } from "./scores.entity";
  
 
 @Entity()
@@ -22,5 +23,9 @@ export class Quiz {
 
     @OneToMany(() => ExplanationEntity, explanation => explanation.quiz, { cascade: true })
     explanations: ExplanationEntity[];
+
+    @OneToMany(() => QuizResult, (quizResults) => quizResults.quiz)
+    quizResults: QuizResult[];
+
  
 }
