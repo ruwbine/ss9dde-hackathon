@@ -46,8 +46,8 @@ async generateText(prompt: string): Promise<string> {
   return response.text();
 }
 
-async generateQuizData(topic: string) {
-  const prompt = quizPromptTemplate(topic);
+async generateQuizData(topic: string , questionType: 'single' | 'multiple' | 'true_false') {
+  const prompt = quizPromptTemplate(topic , questionType );
   const rawText = await this.generateText(prompt);
 
   try {
@@ -61,13 +61,13 @@ async generateQuizData(topic: string) {
   }
 }
 
-async handleRequest(textForQuiz: string): Promise<TextResponse> {
+async handleRequest(textForQuiz: string , questionType: 'single' | 'multiple' | 'true_false' ): Promise<TextResponse> {
   try {
     if (!textForQuiz || typeof textForQuiz !== 'string') {
       throw new Error('Invalid input: textForQuiz must be a non-empty string');
     }
 
-    const quizData = await this.generateQuizData(textForQuiz);
+    const quizData = await this.generateQuizData(textForQuiz , questionType );
 
     if (!quizData || !quizData.quiz || !Array.isArray(quizData.quiz.questions)) {
       throw new Error('Invalid quiz data received');
@@ -78,13 +78,21 @@ async handleRequest(textForQuiz: string): Promise<TextResponse> {
       description: quizData.quiz.description,
       questions: quizData.quiz.questions.map((q) => ({
         text: q.text,
+        type: q.type ??
+          (q.options.length === 2 &&
+            q.options.some((o) => o.text.toLowerCase() === 'true') &&
+            q.options.some((o) => o.text.toLowerCase() === 'false')
+            ? 'true_false'
+            : q.options.filter((o) => o.isCorrect).length > 1
+            ? 'multiple'
+            : 'single'),
         options: q.options.map((o) => ({
           text: o.text,
           isCorrect: o.isCorrect,
         })),
       })),
       isCompleted: false,
-    };
+    };    
     await this.quizDataService.saveQuizData(quizQuestions, explanations);
     return { explanations, quizQuestions: [quizQuestions] };
   } catch (error) {

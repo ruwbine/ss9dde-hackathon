@@ -9,6 +9,7 @@ import { Question } from './entities/request-quiz-questions.entity';
 import { QuestionOption } from './entities/request-quiz-options.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuizDataService } from './repository/quiz.repository';
+import { AiGeminiDataService } from './ai-gemini-data.service';
 
 @Module({
   imports: [
@@ -22,9 +23,9 @@ import { QuizDataService } from './repository/quiz.repository';
     HttpModule,
   ],
   providers: [
-    AiGeminiService,QuizDataService
+    AiGeminiService,QuizDataService,AiGeminiDataService,
   ],
   controllers: [AiGeminiController],
-  exports: [AiGeminiService],
+  exports: [AiGeminiService,AiGeminiDataService,QuizDataService],
 })
 export class AiGeminiModule {}

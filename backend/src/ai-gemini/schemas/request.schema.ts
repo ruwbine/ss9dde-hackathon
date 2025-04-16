@@ -7,7 +7,6 @@ export const ExplonationSchema = z.object({
 
 
 export const RequestSchema = z.object({
-  simplifiedText: z.string(),
   explanations: z.array(ExplonationSchema).min(2),
   quizQuestions: z.array(z.string()),
 });
@@ -20,7 +19,8 @@ export const OptionSchema = z.object({
 
 
 export const QuestionSchema = z.object({        
-  text: z.string().min(1),          
+  text: z.string().min(1),    
+  type: z.enum(['single', 'multiple', 'true_false']),  
   options: z.array(OptionSchema).min(2) 
 });
 

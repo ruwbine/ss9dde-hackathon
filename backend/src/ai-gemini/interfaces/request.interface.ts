@@ -17,8 +17,11 @@ export interface IOption {
   }
   
  
+  export type QuestionType = 'single' | 'multiple' | 'true_false';
+
   export interface IQuestion {        
-    text: string;           
+    text: string;
+    type?:QuestionType;          
     options: IOption[];     
   }
   

@@ -10,9 +10,13 @@ export class Question {
     @Column({ type: 'text' })
     text: string;
 
+    @Column({ type: 'varchar', length: 20, default: 'single' })
+    type: 'single' | 'multiple' | 'true_false';
+
     @OneToMany(() => QuestionOption, option => option.question, { cascade: true })
     options: QuestionOption[];
 
-    @ManyToOne(() => Quiz, quiz => quiz.questions) 
-    quiz: Quiz; 
+    @ManyToOne(() => Quiz, quiz => quiz.questions ,
+    { onDelete: 'CASCADE'})
+    quiz: Quiz;
 }
