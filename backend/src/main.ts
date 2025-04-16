@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import {dataSource} from "./ormconfig";
 
 async function bootstrap() {
+  const port = 3050;
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -15,6 +16,6 @@ async function bootstrap() {
   if(!dataSource.isInitialized){
       await dataSource.initialize();
   }
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();
