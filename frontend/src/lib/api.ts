@@ -8,7 +8,7 @@ export interface CourseDto {
   }
   
   export async function fetchCourses(): Promise<CourseDto[]> {
-    const res = await fetch("https://your-api.com/api/courses", {
+    const res = await fetch("http://localhost:3050/courses", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
