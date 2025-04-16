@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Quiz } from './request-quiz.entity';
 
 @Entity()
 export class ExplanationEntity {
@@ -10,5 +11,9 @@ export class ExplanationEntity {
 
     @Column({ type: 'text' })
     description: string;
+
+    @ManyToOne(() => Quiz, quiz => quiz.explanations)
+    quiz: Quiz;
+
 }
 

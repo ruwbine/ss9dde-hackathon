@@ -20,6 +20,7 @@ export class Quiz {
     @OneToMany(() => Question, question => question.quiz, { cascade: true })
     questions: Question[];
 
-    @OneToMany(() => ExplanationEntity, explanation => explanation.id, { cascade: true })
+    @OneToMany(() => ExplanationEntity, explanation => explanation.quiz, { cascade: true })
     explanations: ExplanationEntity[];
+ 
 }
