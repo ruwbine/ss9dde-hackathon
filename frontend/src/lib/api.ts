@@ -8,10 +8,13 @@ export interface CourseDto {
   }
   
   export async function fetchCourses(): Promise<CourseDto[]> {
+    const token = localStorage.getItem('access_token');
+
     const res = await fetch("http://localhost:3050/courses", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       cache: "no-store", // для next.js
     });

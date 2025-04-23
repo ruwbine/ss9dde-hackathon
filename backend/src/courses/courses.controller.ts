@@ -17,7 +17,7 @@ import {CreateCourseDto} from "./dto/create-course.dto";
 import {UpdateCourseDto} from "./dto/update-course.dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('courses')
 export class CoursesController {
     constructor(private readonly coursesService: CoursesService) {}
