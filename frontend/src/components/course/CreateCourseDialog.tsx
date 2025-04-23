@@ -23,9 +23,11 @@ export function CreateCourseDialog({ onCreated }: { onCreated?: () => void }) {
 
     setLoading(true);
     try {
+      const token = localStorage.getItem('access_token')
       const response = await fetch("http://localhost:3050/courses", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+      Authorization: `Bearer ${token}` },
         body: JSON.stringify({ title, description }),
       });
 
