@@ -20,28 +20,32 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async login(userLoginDto: UserLoginDto): Promise<IResponse> {
+  async login(userLoginDto: UserLoginDto): Promise<any> {
     const { email, password } = userLoginDto;
     const user = await this.userService.findByEmail(email, true);
 
-    if(!user || !user.password) {
+    if (!user || !user.password) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const isPasswordValid = await this.passwordService.comparePasswords(password, user.password);
+    const isPasswordValid = await this.passwordService.comparePasswords(
+      password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const token = this.tokenService.generateToken({userId: user.id, email: user.email})
+    const token = this.tokenService.generateToken({
+      userId: user.id,
+      email: user.email,
+    });
     return {
       success: true,
-      data: [
-        {accessToken: token}
-      ]
+      data: [{ access_token: token }],
+    };
   }
-}
 
   async register(createUserDto: UserCreateDto): Promise<IResponse> {
     const existingUser = await this.userService.isExistByEmail(
@@ -55,17 +59,28 @@ export class AuthService {
     const hashedPassword = await this.passwordService.hashPassword(
       createUserDto.password,
     );
-    const createdUser = await this.userService.create({...createUserDto, password: hashedPassword});
-    if(!createdUser) {
+    const createdUser = await this.userService.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    if (!createdUser) {
       return {
         success: false,
-        error: new Error('Something went wrong while registration')
-      }
+        error: new Error('Something went wrong while registration'),
+      };
     }
+
+    const token = this.tokenService.generateToken({
+      userId: createdUser.id,
+      email: createdUser.email,
+    });
+
     return {
       success: !!createdUser,
-      data: [{ responseMessage: 'Registered successfully' }],
-      error: createdUser ? undefined : new Error('Registration failed')
+      data: [
+        { responseMessage: 'Registered successfully', access_token: token },
+      ],
+      error: createdUser ? undefined : new Error('Registration failed'),
     };
   }
 }

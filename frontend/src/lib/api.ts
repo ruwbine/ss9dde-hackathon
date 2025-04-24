@@ -1,28 +1,29 @@
 // src/lib/api.ts
 
-export interface CourseDto {
-    id: string;
-    title: string;
-    subject: string;
-    isFavorite: boolean;
-  }
-  
-  export async function fetchCourses(): Promise<CourseDto[]> {
-    const token = localStorage.getItem('access_token');
+import { request } from 'http';
 
-    const res = await fetch("http://localhost:3050/courses", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      cache: "no-store", // для next.js
-    });
-  
-    if (!res.ok) {
-      throw new Error("Ошибка загрузки курсов");
-    }
-  
-    return res.json();
-  }
-  
+export interface CourseDto {
+	id: string;
+	title: string;
+	subject: string;
+	isFavorite: boolean;
+}
+
+export async function fetchCourses(): Promise<CourseDto[]> {
+	const token = localStorage.getItem('access_token');
+
+	const res = await fetch('http://localhost:3050/courses', {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		cache: 'no-store', // для next.js
+	});
+
+	if (!res.ok) {
+		throw new Error('Ошибка загрузки курсов');
+	}
+
+	return res.json();
+}

@@ -9,14 +9,16 @@ export default async function RootLayout({
 }: {
 	children: ReactNode;
 }) {
-	const token = (await cookies()).get('access_token');
+	const token = (await cookies().then((cookie) => cookie)).get(
+		'access_token'
+	);
 
 	return (
 		<html lang="ru">
 			<body className="flex min-h-screen">
 				{token && <Sidebar />}
-				<main className="flex-1 md:ml-64 p-6">{children}</main>
-				<Toaster richColors position="top-right" />
+				<main className="flex-1 md-32 p-6">{children}</main>
+				{<Toaster richColors position="top-right" />}
 			</body>
 		</html>
 	);
