@@ -17,7 +17,7 @@ export default async function RootLayout({
 		<html lang="ru">
 			<body className="flex min-h-screen">
 				{token && <Sidebar />}
-				<main className="flex-1 md-32 p-6">{children}</main>
+				<main className="flex-1 md:ml-64 p-6">{children}</main>
 				{<Toaster richColors position="top-right" />}
 			</body>
 		</html>
