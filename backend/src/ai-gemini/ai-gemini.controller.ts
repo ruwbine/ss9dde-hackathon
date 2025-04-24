@@ -7,6 +7,7 @@ import { plainToInstance } from 'class-transformer';
 import { QuizResponseDto } from './dto/expose.dto';
 import { QuestionResponseDto } from './dto/question-response.dto';
 import { UpdateQuestionDto } from './dto/upddate-quize.dto';
+import { PublicQuestionResponseDto } from './dto/public-option.dto';
 
 @Controller('ai-gemini')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -80,7 +81,7 @@ async getQuestionsByQuizId(
   @Get('module/:moduleId/questions')
   async getQuestionsByModule(
     @Param('moduleId') moduleId: string
-  ): Promise<QuestionResponseDto[]> {
+  ): Promise<PublicQuestionResponseDto[]> {
     return this.aiGeminiDataService.getQuestionsByModuleId(moduleId);
   }
 

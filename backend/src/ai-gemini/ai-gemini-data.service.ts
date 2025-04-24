@@ -5,7 +5,7 @@ import { Quiz } from './entities/request-quiz.entity';
 import { Question } from './entities/request-quiz-questions.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuestionOption } from './entities/request-quiz-options.entity';
-import { QuestionResponseDto } from './dto/question-response.dto';
+import { PublicQuestionResponseDto } from './dto/public-option.dto';
 
 @Injectable()
 export class AiGeminiDataService {
@@ -108,7 +108,7 @@ export class AiGeminiDataService {
         });
       }
 
-      async getQuestionsByModuleId(moduleId: string): Promise<QuestionResponseDto[]> {
+      async getQuestionsByModuleId(moduleId: string): Promise<PublicQuestionResponseDto[]> {
         const quizzes = await this.getQuizzesByModuleId(moduleId);
         const allQuestions = await Promise.all(
           quizzes.map(quiz => this.getQuestions(quiz.id))
@@ -120,10 +120,9 @@ export class AiGeminiDataService {
           text: question.text,
           type: question.type,
           options: question.options.map(option => ({
+            id: option.id,
             text: option.text,
-            isCorrect: option.isCorrect,
           })),
         }));
-      }
-
+      }      
 }

@@ -14,8 +14,6 @@ export class AiGeminiScoresService {
         private readonly questionRepository: Repository<Question>,
         @InjectRepository(QuizResult)
         private readonly quizResultRepository: Repository<QuizResult>,
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(Quiz)
         private readonly quizRepository: Repository<Quiz>,
     ) {}
