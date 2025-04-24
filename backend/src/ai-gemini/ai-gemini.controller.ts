@@ -8,6 +8,7 @@ import { QuizResponseDto } from './dto/expose.dto';
 import { QuestionResponseDto } from './dto/question-response.dto';
 import { UpdateQuestionDto } from './dto/upddate-quize.dto';
 import { PublicQuestionResponseDto } from './dto/public-option.dto';
+import { AiGeminiScoresService } from './ai-gemini-scores.service';
 
 @Controller('ai-gemini')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -17,6 +18,7 @@ export class AiGeminiController {
   constructor(
     private readonly aiGeminiService: AiGeminiService,
     private readonly aiGeminiDataService: AiGeminiDataService,
+    private readonly aiGeminiScoresService: AiGeminiScoresService,
     ) {}
 
     @Post('generate')
@@ -83,6 +85,15 @@ async getQuestionsByQuizId(
     @Param('moduleId') moduleId: string
   ): Promise<PublicQuestionResponseDto[]> {
     return this.aiGeminiDataService.getQuestionsByModuleId(moduleId);
+  }
+
+  @Post(':quizId/submit')
+  submit(@Param('quizId') quizId: string, @Body() body: any) {
+    return this.aiGeminiScoresService.calculateAndSaveScore(
+      quizId,
+      body.userId,
+      body.answers
+    );
   }
 
 }

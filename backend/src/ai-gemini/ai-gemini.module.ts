@@ -11,6 +11,8 @@ import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuizDataService } from './repository/quiz.repository';
 import { AiGeminiDataService } from './ai-gemini-data.service';
 import { ModulesModule } from 'src/modules/modules.module';
+import { AiGeminiScoresService } from './ai-gemini-scores.service';
+import { QuizResult } from './entities/scores.entity';
 
 @Module({
   imports: [
@@ -19,15 +21,16 @@ import { ModulesModule } from 'src/modules/modules.module';
       Question,
       Quiz,
       ExplanationEntity,
+      QuizResult,
   ]),
     ModulesModule,
     RabbitmqModule,
     HttpModule,
   ],
   providers: [
-    AiGeminiService,QuizDataService,AiGeminiDataService,
+    AiGeminiService,QuizDataService,AiGeminiDataService,AiGeminiScoresService,
   ],
   controllers: [AiGeminiController],
-  exports: [AiGeminiService,AiGeminiDataService,QuizDataService],
+  exports: [AiGeminiService,AiGeminiDataService,QuizDataService,AiGeminiScoresService],
 })
 export class AiGeminiModule {}

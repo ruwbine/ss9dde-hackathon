@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuizResult } from './entities/scores.entity';
 import { Question } from './entities/request-quiz-questions.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
 import { Quiz } from './entities/request-quiz.entity';
 import { Repository } from 'typeorm';
 
@@ -53,6 +52,9 @@ export class AiGeminiScoresService {
             throw new Error('Quiz not found');
         }
     
+        quiz.isCompleted = true;
+        await this.quizRepository.save(quiz); 
+
         const quizResult = this.quizResultRepository.create({
             userId,
             quiz,  
