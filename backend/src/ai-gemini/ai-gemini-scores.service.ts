@@ -20,7 +20,10 @@ export class AiGeminiScoresService {
     async calculateAndSaveScore(
         quizId: string,
         userId: string,
-        answers: { questionId: string; selectedOptionId: string }[]
+        answers: {
+            questionId: string;
+            selectedOptionIds: string[]; 
+        }[]
     ): Promise<QuizResult> {
         const questions = await this.questionRepository.find({
             where: { quiz: { id: quizId } },
@@ -33,15 +36,38 @@ export class AiGeminiScoresService {
     
         let score = 0;
     
-        questions.forEach((question) => {
+        for (const question of questions) {
             const userAnswer = answers.find((a) => a.questionId === question.id);
-            if (userAnswer) {
-                const correctOption = question.options.find((o) => o.isCorrect);
-                if (correctOption && correctOption.id === userAnswer.selectedOptionId) {
-                    score++;
-                }
+            if (!userAnswer) continue;
+    
+            const selectedOptionIds = userAnswer.selectedOptionIds.sort();
+            const correctOptionIds = question.options
+                .filter((o) => o.isCorrect)
+                .map((o) => o.id)
+                .sort();
+    
+            let isCorrect = false;
+    
+            switch (question.type) {
+                case 'single':
+                case 'true_false':
+                    isCorrect =
+                        correctOptionIds.length === 1 &&
+                        selectedOptionIds.length === 1 &&
+                        correctOptionIds[0] === selectedOptionIds[0];
+                    break;
+    
+                case 'multiple':
+                    isCorrect =
+                        correctOptionIds.length === selectedOptionIds.length &&
+                        correctOptionIds.every((id, idx) => id === selectedOptionIds[idx]);
+                    break;
             }
-        });
+    
+            if (isCorrect) {
+                score++;
+            }
+        }
     
         const totalQuestions = questions.length;
         const percentage = (score / totalQuestions) * 100;
@@ -53,11 +79,11 @@ export class AiGeminiScoresService {
         }
     
         quiz.isCompleted = true;
-        await this.quizRepository.save(quiz); 
-
+        await this.quizRepository.save(quiz);
+    
         const quizResult = this.quizResultRepository.create({
             userId,
-            quiz,  
+            quiz,
             score,
             totalQuestions,
             percentage,
@@ -66,5 +92,4 @@ export class AiGeminiScoresService {
     
         return this.quizResultRepository.save(quizResult);
     }
-    
-}
+}    

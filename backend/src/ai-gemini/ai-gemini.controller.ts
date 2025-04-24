@@ -88,12 +88,17 @@ async getQuestionsByQuizId(
   }
 
   @Post(':quizId/submit')
-  submit(@Param('quizId') quizId: string, @Body() body: any) {
-    return this.aiGeminiScoresService.calculateAndSaveScore(
-      quizId,
-      body.userId,
-      body.answers
-    );
+  async submit(@Param('quizId') quizId: string, @Body() body: { userId: string; answers: { questionId: string; selectedOptionIds: string[] }[] }) {
+    try {
+      const quizResult = await this.aiGeminiScoresService.calculateAndSaveScore(
+        quizId,
+        body.userId,
+        body.answers
+      );
+      return quizResult;
+    } catch (error) {
+      throw new Error(`Error submitting quiz: ${error.message}`);
+    }
   }
 
 }
