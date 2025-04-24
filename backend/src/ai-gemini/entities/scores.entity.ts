@@ -3,10 +3,8 @@ import {
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
-    CreateDateColumn,
   } from 'typeorm';
 import { Quiz } from './request-quiz.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
   
 
 @Entity()
@@ -14,8 +12,8 @@ export class QuizResult {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.quizResults)
-    user: UserEntity;
+    @Column()
+    userId: string; 
 
     @ManyToOne(() => Quiz, (quiz) => quiz.quizResults)
     quiz: Quiz;

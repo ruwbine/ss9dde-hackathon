@@ -10,6 +10,7 @@ import { QuestionOption } from './entities/request-quiz-options.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuizDataService } from './repository/quiz.repository';
 import { AiGeminiDataService } from './ai-gemini-data.service';
+import { ModulesModule } from 'src/modules/modules.module';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { AiGeminiDataService } from './ai-gemini-data.service';
       QuestionOption,
       Question,
       Quiz,
-      ExplanationEntity
+      ExplanationEntity,
   ]),
+    ModulesModule,
     RabbitmqModule,
     HttpModule,
   ],

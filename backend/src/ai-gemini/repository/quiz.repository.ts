@@ -5,6 +5,7 @@ import { Question } from "src/ai-gemini/entities/request-quiz-questions.entity";
 import { Quiz } from "src/ai-gemini/entities/request-quiz.entity";
 import { ExplanationEntity } from "src/ai-gemini/entities/requests-explonation.entity";
 import { Explanation, IQuiz } from "src/ai-gemini/interfaces/request.interface";
+import { ModuleEntity } from "src/modules/entities/module.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -12,32 +13,32 @@ export class QuizDataService {
   constructor(
     @InjectRepository(Quiz)
     private quizRepository: Repository<Quiz>
-    
   ) {}
 
-  async saveQuizData(quizData: IQuiz, explanations: Explanation[]): Promise<void> {
+  async saveQuizData(quizData: IQuiz, explanations: Explanation[], module: ModuleEntity): Promise<void> {
     const quizEntity = new Quiz();
     quizEntity.title = quizData.title;
     quizEntity.description = quizData.description;
     quizEntity.isCompleted = false;
-  
-    quizEntity.questions = quizData.questions.map(q => {
+    quizEntity.module = module; 
+
+    quizEntity.questions = quizData.questions.map((q) => {
       const questionEntity = new Question();
       questionEntity.text = q.text;
-      questionEntity.type = q.type ?? 'single'; 
+      questionEntity.type = q.type ?? 'single';
       questionEntity.quiz = quizEntity;
-  
-      questionEntity.options = q.options.map(o => {
+
+      questionEntity.options = q.options.map((o) => {
         const optionEntity = new QuestionOption();
         optionEntity.text = o.text;
         optionEntity.isCorrect = o.isCorrect;
         return optionEntity;
       });
-  
+
       return questionEntity;
     });
-  
-    const explanationsEntities = explanations.map(explanation => {
+
+    const explanationEntities = explanations.map((explanation) => {
       const explanationEntity = new ExplanationEntity();
       explanationEntity.term = explanation.term;
       explanationEntity.description = explanation.description;
@@ -45,24 +46,9 @@ export class QuizDataService {
       return explanationEntity;
     });
 
-    quizEntity.questions = quizData.questions.map(q => {
-      const questionEntity = new Question();
-      questionEntity.text = q.text;
-      questionEntity.type = q.type ?? 'single'; 
-      questionEntity.quiz = quizEntity;
-
-      questionEntity.options = q.options.map(o => {
-        const optionEntity = new QuestionOption();
-        optionEntity.text = o.text;
-        optionEntity.isCorrect = o.isCorrect;
-        return optionEntity;
-      });
-
-      return questionEntity;
-    });
-
-    quizEntity.explanations = explanationsEntities;
+    quizEntity.explanations = explanationEntities;
 
     await this.quizRepository.save(quizEntity);
   }
 }
+

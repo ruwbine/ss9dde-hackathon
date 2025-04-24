@@ -29,7 +29,8 @@ export interface IOption {
     title: string;
     description: string;          
     questions: IQuestion[]; 
-    isCompleted: boolean; 
+    isCompleted: boolean;
+    module:string; 
   }
   
   export interface IAnswer {

@@ -32,9 +32,6 @@ export class UserEntity implements IUser {
   @Column({ type: 'timestamp', nullable: true })
   lastLogin?: Date;
 
-  @OneToMany(() => QuizResult, (result) => result.user)
-  quizResults: QuizResult[];
-
   @CreateDateColumn()
   createdAt: Date;
 

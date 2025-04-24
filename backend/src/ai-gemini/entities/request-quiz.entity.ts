@@ -1,7 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Question } from "./request-quiz-questions.entity";
 import { ExplanationEntity } from "./requests-explonation.entity";
 import { QuizResult } from "./scores.entity";
+import { ModuleEntity } from "src/modules/entities/module.entity";
  
 
 @Entity()
@@ -27,5 +28,7 @@ export class Quiz {
     @OneToMany(() => QuizResult, (quizResults) => quizResults.quiz)
     quizResults: QuizResult[];
 
- 
+    @ManyToOne(() => ModuleEntity, module => module.quizzes, { onDelete: 'CASCADE' })
+    module: ModuleEntity;
+
 }

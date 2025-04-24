@@ -4,6 +4,8 @@ import {ModuleEntity} from "./entities/module.entity";
 import {ModulesRepository} from "./repositories/modules.repository";
 import {UpdateModuleDto} from "./dto/update-module.dto";
 import {CoursesRepository} from "../courses/repository/courses.repository";
+import { Repository } from 'typeorm';
+import { Quiz } from 'src/ai-gemini/entities/request-quiz.entity';
 
 
 @Injectable()
@@ -13,7 +15,8 @@ export class ModulesService implements OnModuleInit{
     }
 
     constructor(private readonly moduleRepository: ModulesRepository,
-    private readonly courseRepo: CoursesRepository) {}
+    private readonly courseRepo: CoursesRepository ,
+    ) {}
 
     async create(createModuleDto: CreateModuleDto): Promise<ModuleEntity> {
         const {courseId} = createModuleDto;
@@ -52,4 +55,5 @@ export class ModulesService implements OnModuleInit{
     async remove(id: string): Promise<void> {
         await this.moduleRepository.remove(id);
     }
+
 }

@@ -27,7 +27,8 @@ export const QuestionSchema = z.object({
 
 export const QuizSchema = z.object({         
   title: z.string().min(1),         
-  description: z.string().min(1),   
+  description: z.string().min(1),
+  moduleId: z.string().uuid(),  
   questions: z.array(QuestionSchema).min(1)  
 });
 
@@ -38,6 +39,7 @@ export const QuizDataSchema = z.object({
 
 
 const jsonData = {
+
 };
 
 try {

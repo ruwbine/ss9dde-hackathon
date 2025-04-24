@@ -12,7 +12,8 @@ export class ExplanationEntity {
     @Column({ type: 'text' })
     description: string;
 
-    @ManyToOne(() => Quiz, quiz => quiz.explanations)
+    @ManyToOne(() => Quiz, quiz => quiz.explanations , 
+    { onDelete: 'CASCADE'})
     quiz: Quiz;
 
 }

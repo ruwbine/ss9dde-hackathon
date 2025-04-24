@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Quiz } from './entities/request-quiz.entity';
 import { Question } from './entities/request-quiz-questions.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuestionOption } from './entities/request-quiz-options.entity';
+import { QuestionResponseDto } from './dto/question-response.dto';
 
 @Injectable()
 export class AiGeminiDataService {
@@ -98,4 +99,31 @@ export class AiGeminiDataService {
         return this.questionRepository.save(question);
       }
       
+      async getQuizzesByModuleId(moduleId: string): Promise<Quiz[]> {
+        return this.quizRepository.find({
+          where: {
+            module: { id: moduleId },
+          },
+          relations: ['module'],
+        });
+      }
+
+      async getQuestionsByModuleId(moduleId: string): Promise<QuestionResponseDto[]> {
+        const quizzes = await this.getQuizzesByModuleId(moduleId);
+        const allQuestions = await Promise.all(
+          quizzes.map(quiz => this.getQuestions(quiz.id))
+        );
+        const flatQuestions = allQuestions.flat();
+      
+        return flatQuestions.map(question => ({
+          id: question.id,
+          text: question.text,
+          type: question.type,
+          options: question.options.map(option => ({
+            text: option.text,
+            isCorrect: option.isCorrect,
+          })),
+        }));
+      }
+
 }

@@ -23,15 +23,19 @@ export class AiGeminiScoresService {
     async calculateAndSaveScore(
         quizId: string,
         userId: string,
-        answers: { questionId: string; selectedOptionId: string }[],
+        answers: { questionId: string; selectedOptionId: string }[]
     ): Promise<QuizResult> {
         const questions = await this.questionRepository.find({
             where: { quiz: { id: quizId } },
             relations: ['options'],
         });
-
+    
+        if (!questions.length) {
+            throw new Error('No questions found for the quiz');
+        }
+    
         let score = 0;
-
+    
         questions.forEach((question) => {
             const userAnswer = answers.find((a) => a.questionId === question.id);
             if (userAnswer) {
@@ -41,22 +45,26 @@ export class AiGeminiScoresService {
                 }
             }
         });
-
+    
         const totalQuestions = questions.length;
         const percentage = (score / totalQuestions) * 100;
-
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+    
         const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
-
+    
+        if (!quiz) {
+            throw new Error('Quiz not found');
+        }
+    
         const quizResult = this.quizResultRepository.create({
-            user: user as UserEntity, 
-            quiz: quiz as Quiz,       
+            userId,
+            quiz,  
             score,
             totalQuestions,
             percentage,
             completedAt: new Date(),
         });
-
+    
         return this.quizResultRepository.save(quizResult);
     }
+    
 }

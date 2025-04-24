@@ -22,7 +22,7 @@ export class AiGeminiController {
   async generateQuiz(@Body() textRequest: TextRequest): Promise<TextResponse> {
     try {
       this.logger.log('Received request to generate quiz...');
-      const response = await this.aiGeminiService.handleRequest(textRequest.textForQuiz , textRequest.QuestionType );
+      const response = await this.aiGeminiService.handleRequest(textRequest.textForQuiz, textRequest.QuestionType, textRequest.moduleId);
       this.logger.log('Quiz generated successfully');
       return response;
     } catch (error) {
@@ -75,6 +75,13 @@ async getQuestionsByQuizId(
     return plainToInstance(QuestionResponseDto, updated, {
       excludeExtraneousValues: true,
     });
+  }
+
+  @Get('module/:moduleId/questions')
+  async getQuestionsByModule(
+    @Param('moduleId') moduleId: string
+  ): Promise<QuestionResponseDto[]> {
+    return this.aiGeminiDataService.getQuestionsByModuleId(moduleId);
   }
 
 }
