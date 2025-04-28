@@ -47,7 +47,7 @@ export class AuthService {
     };
   }
 
-  async register(createUserDto: UserCreateDto): Promise<IResponse> {
+  async register(createUserDto: UserCreateDto): Promise<any> {
     const existingUser = await this.userService.isExistByEmail(
       createUserDto.email,
     );
@@ -75,12 +75,6 @@ export class AuthService {
       email: createdUser.email,
     });
 
-    return {
-      success: !!createdUser,
-      data: [
-        { responseMessage: 'Registered successfully', access_token: token },
-      ],
-      error: createdUser ? undefined : new Error('Registration failed'),
-    };
+    return {access_token: token};
   }
 }
