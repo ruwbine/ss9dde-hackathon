@@ -1,56 +1,44 @@
-'use client';
+import { cookies } from 'next/headers';
 
-import { CourseCard } from "@/components/course/CourseCard";
-import { CreateCourseDialog } from "@/components/course/CreateCourseDialog";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ErrorMessage } from "@/components/ui/error-message";
-import { CourseDto, fetchCourses } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { CourseCard } from '@/components/course/CourseCard';
+import { CreateCourseDialog } from '@/components/course/CreateCourseDialog';
+import { EmptyState } from '@/components/ui/empty-state';
+import { ErrorMessage } from '@/components/ui/error-message';
+import { fetchCourses } from '@/lib/api';
 
-export default function CoursesPage() {
-  const [courses, setCourses] = useState<CourseDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function CoursesPage() {
+	const token = (await cookies()).get('access_token')?.value;
+	let courses = [];
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchCourses();
-      setCourses(data);
-    } catch (err: any) {
-      setError(err.message || "Ошибка");
-    } finally {
-      setLoading(false);
-    }
-  };
+	try {
+		courses = await fetchCourses(token || '');
+	} catch (error) {
+		return (
+			<div className="p-6">
+				<ErrorMessage
+					title="Ошибка загрузки курсов"
+					description="Проверьте подключение или повторите позже."
+				/>
+			</div>
+		);
+	}
 
-  useEffect(() => {
-    load();
-  }, []);
+	return (
+		<div className="p-6">
+			<div className="flex justify-between items-center mb-4">
+				<h1 className="text-2xl font-bold">Все курсы</h1>
+				<CreateCourseDialog token={token as string} />
+			</div>
 
-  return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Все курсы</h1>
-        <CreateCourseDialog onCreated={load} />
-      </div>
-
-      {error && (
-        <ErrorMessage
-          title="Не удалось загрузить курсы"
-          description="Пожалуйста, попробуйте позже или обратитесь к администратору."
-        />
-      )}
-
-      {!loading && !error && courses.length === 0 && <EmptyState />}
-
-      {!loading && courses.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+			{courses.length === 0 ? (
+				<EmptyState />
+			) : (
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+					{courses.map((course) => (
+						<CourseCard key={course.id} course={course} />
+					))}
+				</div>
+			)}
+		</div>
+	);
 }
