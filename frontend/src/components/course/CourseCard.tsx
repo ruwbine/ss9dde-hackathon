@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import Link from "next/link";
-import { CourseDto } from "@/lib/api";
+import { CourseDto } from "@/lib/courses/courses.api";
 
 export function CourseCard({ course }: { course: CourseDto }) {
   const [isFavorite, setIsFavorite] = useState(course.isFavorite);

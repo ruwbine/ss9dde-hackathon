@@ -41,7 +41,7 @@ export default function AuthPage() {
 
 			if (!res.ok) throw new Error(data.message || 'Ошибка авторизации');
 
-			localStorage.setItem('access_token', data.data[0].accessToken);
+			localStorage.setItem('access_token', data[0].access_token);
 			toast.success(
 				`Успешно: ${type === 'login' ? 'вход' : 'регистрация'}`
 			);
