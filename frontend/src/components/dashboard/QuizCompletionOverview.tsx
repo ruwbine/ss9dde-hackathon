@@ -25,17 +25,17 @@ export function QuizCompletionTable({ results }: QuizCompletionTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Completed Quizzes</CardTitle>
+        <CardTitle>Завершенные тесты</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
-          <TableCaption>A list of your recent quiz completions.</TableCaption>
+          <TableCaption>Список последних отправок</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Quiz Title</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Percentage</TableHead>
-              <TableHead className="text-right">Completed At</TableHead>
+              <TableHead>Название</TableHead>
+              <TableHead>Оценка</TableHead>
+              <TableHead>Процент</TableHead>
+              <TableHead className="text-right">Дата отправки</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -28,7 +28,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Total Quizzes Completed
+            Всего завершенных тестов
           </CardTitle>
           {/* Optional: Add an icon */}
           {/* <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7l3 3m0 0l3-3m-3 3V10"></path></svg> */}
@@ -43,7 +43,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Average Score Percentage
+            Средний процент успеваемости
           </CardTitle>
            {/* Optional: Add an icon */}
         </CardHeader>
@@ -58,7 +58,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
        <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Latest Completion
+            Последнее прохождени теста
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -22,7 +22,7 @@ interface ScorePercentageChartProps {
 
 export function ScorePercentageChart({ results }: ScorePercentageChartProps) {
   if (!results || results.length === 0) {
-    return <p>No data available to display chart.</p>;
+    return <p>Нет данных для отображения.</p>;
   }
 
   // Prepare data for the chart
@@ -32,7 +32,7 @@ export function ScorePercentageChart({ results }: ScorePercentageChartProps) {
 
   const chartData = sortedResults.map((result, index) => ({
     // Using index + 1 for a simple label if titles are long or repetitive
-    name: `Quiz ${index + 1}`, // Or result.quiz.title, but could be long
+    name: `Тест ${index + 1}`, // Or result.quiz.title, but could be long
     percentage: result.percentage,
     date: new Date(result.completedAt).toLocaleDateString(), // Use date for tooltip
     quizTitle: result.quiz.title // Use title for tooltip
@@ -42,7 +42,7 @@ export function ScorePercentageChart({ results }: ScorePercentageChartProps) {
   return (
     <Card className="col-span-4"> {/* Adjust col-span based on your grid layout */}
       <CardHeader>
-        <CardTitle>Quiz Performance</CardTitle>
+        <CardTitle>Успеваемость</CardTitle>
       </CardHeader>
       <CardContent className="h-[300px] md:h-[350px] lg:h-[400px]"> {/* Give the chart container a height */}
         <ResponsiveContainer width="100%" height="100%">
@@ -57,7 +57,7 @@ export function ScorePercentageChart({ results }: ScorePercentageChartProps) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" /> {/* Use 'name' for axis labels */}
-            <YAxis domain={[0, 100]} label={{ value: 'Percentage', angle: -90, position: 'insideLeft' }} />
+            <YAxis domain={[0, 100]} label={{ value: 'Процент', angle: -90, position: 'insideLeft' }} />
             <Tooltip
                formatter={(value: number, name: string, props: any) => [`${value}%`, props.payload.quizTitle]} // Show percentage and quiz title
                labelFormatter={(label: string, props: any) => { // Format label
