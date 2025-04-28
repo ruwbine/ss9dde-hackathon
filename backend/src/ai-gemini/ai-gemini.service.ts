@@ -2,11 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy } from "@nestjs/microservices";
-import { Explanation, IQuiz, TextResponse } from "./interfaces/request.interface";
+import { TextResponse } from "./interfaces/request.interface";
 import { QuizDataSchema } from "./schemas/request.schema";
 import { quizPromptTemplate } from "./promts/gemini-ai.promts";
 import { QuizDataService } from "./repository/quiz.repository";
 import { ModulesRepository } from "src/modules/repositories/modules.repository";
+import { buildQuizFromData } from "./utilits/quizData.utils";
 
 @Injectable()
 export class AiGeminiService {
@@ -48,87 +49,66 @@ async generateText(prompt: string): Promise<string> {
   return response.text();
 }
 
-async generateQuizData(topic: string , questionType: 'single' | 'multiple' | 'true_false' , moduleId: string ) {
+async generateQuizData(topic: string, questionType: 'single' | 'multiple' | 'true_false', moduleId: string) {
   const prompt = quizPromptTemplate(topic, questionType, moduleId);
   const rawText = await this.generateText(prompt);
 
+  const cleaned = (() => {
+    try {
+      const match = rawText.match(/{[\s\S]*}/)?.[0];
+      if (!match) throw new Error('No JSON object found');
+      return match;
+    } catch (e) {
+      console.error('Failed to extract JSON:', e);
+      throw new Error('Failed to extract JSON');
+    }
+  })();
+
+  const json = (() => {
+    try {
+      return JSON.parse(cleaned);
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError);
+      throw new Error('Failed to parse JSON');
+    }
+  })();
+
   try {
-    const cleaned = rawText.replace(/```json|```/g, '').trim();
-    const json = JSON.parse(cleaned);
     const parsed = QuizDataSchema.parse(json);
+    parsed.quiz.moduleId = moduleId;
     return parsed;
-  } catch (e) {
-    console.error('Failed to validate or parse response:', e);
-    throw new Error('Failed to generate valid quiz data');
+  } catch (validationError) {
+    console.error('Failed to validate JSON structure:', validationError);
+    throw new Error('Invalid quiz data structure');
   }
 }
+
 
 async handleRequest(
   textForQuiz: string,
   questionType: 'single' | 'multiple' | 'true_false',
   moduleId: string
 ): Promise<TextResponse> {
-  try {
-    if (!textForQuiz || textForQuiz.trim().length === 0) {
-      throw new Error('Invalid input: textForQuiz must be a non-empty string');
-    }
-
-    this.logger.log(`Attempting to find module with ID: ${moduleId}`);
-    const module = await this.moduleRepository.findOne(moduleId);
-
-    if (!module) {
-      throw new Error(`Module with ID ${moduleId} not found`);
-    }
-
-    this.logger.log('Generating quiz data...');
-    const quizData = await this.generateQuizData(textForQuiz, questionType , moduleId);
-
-    if (!quizData || !quizData.quiz || !Array.isArray(quizData.quiz.questions)) {
-      this.logger.error('Invalid quiz data received', {
-        quizData: JSON.stringify(quizData),
-      });
-      throw new Error('Invalid quiz data received');
-    }
-
-    this.logger.log('Quiz data received successfully');
-    const explanations: Explanation[] = quizData.explanations || [];
-
-    const quiz: IQuiz = {
-      title: quizData.quiz.title,
-      description: quizData.quiz.description,
-      isCompleted: false,
-      module: module.id,
-      questions: quizData.quiz.questions.map((q) => ({
-        text: q.text,
-        type: q.type ?? (q.options && q.options.length === 2 &&
-          q.options.some((o) => o.text.toLowerCase() === 'true') &&
-          q.options.some((o) => o.text.toLowerCase() === 'false') ? 'true_false' :
-          (q.options.filter((o) => o.isCorrect).length > 1 ? 'multiple' : 'single')),
-        options: q.options.map((o) => ({
-          text: o.text,
-          isCorrect: o.isCorrect,
-        })),
-      })),
-    };
-
-    try {
-      await this.quizDataService.saveQuizData(quiz, explanations, module);
-    } catch (saveError) {
-      this.logger.error('Error saving quiz data', {
-        error: saveError.message,
-        stack: saveError.stack,
-      });
-      throw new Error('Failed to save quiz data');
-    }
-
-    return { explanations, quizQuestions: [quiz] };
-  } catch (error) {
-    this.logger.error('Error generating quiz', {
-      error: error.message,
-      stack: error.stack,
-    });
-    throw new Error('An error occurred while generating the quiz');
+  if (!textForQuiz?.trim()) {
+    throw new Error('Invalid input: textForQuiz must be a non-empty string');
   }
+
+  const module = await this.moduleRepository.findOne(moduleId);
+  if (!module) {
+    throw new Error(`Module with ID ${moduleId} not found`);
+  }
+
+  const quizData = await this.generateQuizData(textForQuiz, questionType, moduleId);
+  if (!quizData?.quiz?.questions?.length) {
+    throw new Error('Invalid quiz data received');
+  }
+
+  const explanations = quizData.explanations ?? [];
+  const quiz = buildQuizFromData(quizData.quiz, module.id);
+
+  await this.quizDataService.saveQuizData(quiz, explanations, module);
+
+  return { explanations, quizQuestions: [quiz] };
 }
 
 

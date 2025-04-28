@@ -1,4 +1,4 @@
-import {  Controller, Logger, Post, UsePipes, ValidationPipe , Body, HttpCode, Delete, Param, Patch, NotFoundException, Get, HttpStatus, Query } from '@nestjs/common';
+import {  Controller, Logger, Post, UsePipes, ValidationPipe , Body, HttpCode, Delete, Param, Patch, NotFoundException, Get, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import {  TextResponse } from './interfaces/request.interface';
 import { AiGeminiService } from './ai-gemini.service';
 import { TextRequest } from './dto/request.dto';
@@ -8,7 +8,7 @@ import { QuizResponseDto } from './dto/expose.dto';
 import { QuestionResponseDto } from './dto/question-response.dto';
 import { UpdateQuestionDto } from './dto/upddate-quize.dto';
 import { PublicQuestionResponseDto } from './dto/public-option.dto';
-import { AiGeminiScoresService } from './ai-gemini-scores.service';
+
 
 @Controller('ai-gemini')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -18,7 +18,6 @@ export class AiGeminiController {
   constructor(
     private readonly aiGeminiService: AiGeminiService,
     private readonly aiGeminiDataService: AiGeminiDataService,
-    private readonly aiGeminiScoresService: AiGeminiScoresService,
     ) {}
 
     @Post('generate')
@@ -80,25 +79,11 @@ async getQuestionsByQuizId(
     });
   }
 
-  @Get('module/:moduleId/questions')
-  async getQuestionsByModule(
-    @Param('moduleId') moduleId: string
-  ): Promise<PublicQuestionResponseDto[]> {
-    return this.aiGeminiDataService.getQuestionsByModuleId(moduleId);
-  }
-
-  @Post(':quizId/submit')
-  async submit(@Param('quizId') quizId: string, @Body() body: { userId: string; answers: { questionId: string; selectedOptionIds: string[] }[] }) {
-    try {
-      const quizResult = await this.aiGeminiScoresService.calculateAndSaveScore(
-        quizId,
-        body.userId,
-        body.answers
-      );
-      return quizResult;
-    } catch (error) {
-      throw new Error(`Error submitting quiz: ${error.message}`);
+  @Get('quiz/:moduleId/questions')
+    async getQuestionsByModule(
+      @Param('moduleId') moduleId: string
+    ): Promise<PublicQuestionResponseDto[]> {
+      return this.aiGeminiDataService.getQuestionsByModuleId(moduleId);
     }
-  }
-
+    
 }

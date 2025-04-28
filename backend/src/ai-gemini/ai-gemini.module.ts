@@ -13,6 +13,7 @@ import { AiGeminiDataService } from './ai-gemini-data.service';
 import { ModulesModule } from 'src/modules/modules.module';
 import { AiGeminiScoresService } from './ai-gemini-scores.service';
 import { QuizResult } from './entities/scores.entity';
+import { AIGeminiScoresController } from './ai-gemini.scores.controller';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { QuizResult } from './entities/scores.entity';
   providers: [
     AiGeminiService,QuizDataService,AiGeminiDataService,AiGeminiScoresService,
   ],
-  controllers: [AiGeminiController],
+  controllers: [AiGeminiController,AIGeminiScoresController],
   exports: [AiGeminiService,AiGeminiDataService,QuizDataService,AiGeminiScoresService],
 })
 export class AiGeminiModule {}

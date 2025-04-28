@@ -6,6 +6,7 @@ import { Question } from './entities/request-quiz-questions.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuestionOption } from './entities/request-quiz-options.entity';
 import { PublicQuestionResponseDto } from './dto/public-option.dto';
+import { QuizResult } from './entities/scores.entity';
 
 @Injectable()
 export class AiGeminiDataService {
@@ -18,6 +19,8 @@ export class AiGeminiDataService {
         private readonly explanationRepository : Repository<ExplanationEntity>,
         @InjectRepository(QuestionOption)
         private readonly questionOptionRepository: Repository<QuestionOption>,
+        @InjectRepository(QuizResult)
+        private readonly quizResultRepository: Repository<QuizResult>,
     ) {}
 
     async getAllQuizzes(): Promise<Quiz[]> {
@@ -124,5 +127,24 @@ export class AiGeminiDataService {
             text: option.text,
           })),
         }));
-      }      
+      }    
+      
+      async getUserQuizResults(userId: string) {
+        const results = await this.quizResultRepository.find({
+          where: { userId },
+          relations: ['quiz'], 
+          order: { completedAt: 'DESC' }, 
+        });
+    
+        return results.map((result) => ({
+          ...result, 
+          quiz: {
+            ...result.quiz, 
+            id: result.quiz.id,
+            title: result.quiz.title,
+            description: result.quiz.description,
+            isCompleted: result.quiz.isCompleted,
+          },
+        }));
+      }
 }
