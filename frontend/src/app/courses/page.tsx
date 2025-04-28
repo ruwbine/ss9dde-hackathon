@@ -4,14 +4,18 @@ import { CourseCard } from '@/components/course/CourseCard';
 import { CreateCourseDialog } from '@/components/course/CreateCourseDialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorMessage } from '@/components/ui/error-message';
-import { fetchCourses } from '@/lib/api';
+import { CourseDto, fetchCourses } from '@/lib/courses/courses.api';
+import { ApiResponse } from '@/types/api/api-response.interface';
+
+
 
 export default async function CoursesPage() {
 	const token = (await cookies()).get('access_token')?.value;
-	let courses = [];
+	const response: ApiResponse<CourseDto> = await fetchCourses(token || '');
+	const courses = response.data;
+
 
 	try {
-		courses = await fetchCourses(token || '');
 	} catch (error) {
 		return (
 			<div className="p-6">

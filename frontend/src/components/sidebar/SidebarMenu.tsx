@@ -23,7 +23,7 @@ export function SidebarMenu({ onNavigate }: SidebarMenuProps) {
       <SidebarItem icon={<User />} label="Аккаунт" href="/account" onClick={handleClick} />
       <SidebarItem icon={<Calendar />} label="Календарь" href="/calendar" onClick={handleClick} />
       <SidebarItem icon={<Settings />} label="Настройки" href="/settings" onClick={handleClick} />
-      <SidebarItem icon={<BarChart2 />} label="Прогресс" href="/progress" onClick={handleClick} />
+      <SidebarItem icon={<BarChart2 />} label="Прогресс" href="/dashboard" onClick={handleClick} />
       <SidebarItem icon={<LogOut />} label="Выход" href="/logout" onClick={handleClick} />
     </div>
   );
