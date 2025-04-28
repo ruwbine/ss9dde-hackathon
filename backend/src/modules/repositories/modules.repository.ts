@@ -1,10 +1,10 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import {FindOptionsWhere, Repository} from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
-import {ITypeormRepository} from "../../common/interfaces/typeorm-repository.interface";
+import { NotFoundException } from '@nestjs/common'; 
 import {ModuleEntity} from "../entities/module.entity";
 import {CreateModuleDto} from "../dto/create-module.dto";
 import {UpdateModuleDto} from "../dto/update-module.dto";
+import { ITypeormRepository } from 'src/common/interfaces/typeorm-repository.interface';
 
 export class ModulesRepository implements ITypeormRepository<ModuleEntity> {
     constructor(

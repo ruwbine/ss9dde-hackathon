@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import {dataSource} from "./ormconfig";
 
 async function bootstrap() {
+  const port = 3050;
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -11,10 +12,13 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  });
   if(!dataSource.isInitialized){
       await dataSource.initialize();
   }
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();

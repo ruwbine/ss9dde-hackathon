@@ -33,6 +33,10 @@ import { AdaptiveLearningModule } from './adaptive_learning/adaptive_learning.mo
     AdaptiveLearningModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: ApiResponseInterceptor,
+    },],
 })
 export class AppModule {}
