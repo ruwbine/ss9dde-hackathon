@@ -1,10 +1,10 @@
 import { SidebarItem } from './SidebarItem';
 import {
 	Book,
-	Calendar,
+	// Calendar,
 	LogOut,
-	Settings,
-	User,
+	// Settings,
+	// User,
 	BarChart2,
 } from 'lucide-react';
 
