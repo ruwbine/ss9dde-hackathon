@@ -40,7 +40,7 @@ export async function fetchModules(courseId: string): Promise<IModule[]> {
 		const response = await res.json();
 		// Basic validation if needed, assuming API returns IModule[]
 		const modules = response.data;
-		return modules as IModule[];
+		return modules[0].modules as IModule[];
 	} catch (error) {
 		console.error('Fetch error for modules:', error);
 		// Handle network errors or other exceptions
