@@ -36,15 +36,3 @@ export const QuizDataSchema = z.object({
   quiz: QuizSchema,                 
   explanations: z.array(ExplonationSchema).optional()  
 });
-
-
-const jsonData = {
-
-};
-
-try {
-  QuizDataSchema.parse(jsonData);  
-  console.log("Валидация прошла успешно");
-} catch (e) {
-  console.error(e.errors);  
-}

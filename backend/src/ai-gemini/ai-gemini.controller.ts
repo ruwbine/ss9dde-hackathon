@@ -79,7 +79,7 @@ async getQuestionsByQuizId(
     });
   }
 
-  @Get('quiz/:moduleId/questions')
+  @Get('/:moduleId/questions')
     async getQuestionsByModule(
       @Param('moduleId') moduleId: string
     ): Promise<PublicQuestionResponseDto[]> {

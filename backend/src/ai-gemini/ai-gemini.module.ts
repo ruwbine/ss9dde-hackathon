@@ -14,6 +14,7 @@ import { ModulesModule } from 'src/modules/modules.module';
 import { AiGeminiScoresService } from './ai-gemini-scores.service';
 import { QuizResult } from './entities/scores.entity';
 import { AIGeminiScoresController } from './ai-gemini.scores.controller';
+import { QuizTagEntity } from './entities/tags.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AIGeminiScoresController } from './ai-gemini.scores.controller';
       Quiz,
       ExplanationEntity,
       QuizResult,
+      QuizTagEntity,
   ]),
     ModulesModule,
     RabbitmqModule,
@@ -35,3 +37,4 @@ import { AIGeminiScoresController } from './ai-gemini.scores.controller';
   exports: [AiGeminiService,AiGeminiDataService,QuizDataService,AiGeminiScoresService],
 })
 export class AiGeminiModule {}
+

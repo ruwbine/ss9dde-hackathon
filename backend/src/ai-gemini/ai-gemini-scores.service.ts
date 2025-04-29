@@ -92,4 +92,18 @@ export class AiGeminiScoresService {
     
         return this.quizResultRepository.save(quizResult);
     }
+
+    async getRecentResultsByUser(userId: string): Promise<QuizResult[]> {
+        return this.quizResultRepository.find({
+          where: { userId },
+          order: { completedAt: 'DESC' },
+          take: 4,
+          relations: {
+            quiz: {
+              tags: true,
+            },
+          },
+        });
+      }
+      
 }    
