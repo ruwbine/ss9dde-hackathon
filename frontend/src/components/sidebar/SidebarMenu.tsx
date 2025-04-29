@@ -6,6 +6,7 @@ import {
 	// Settings,
 	// User,
 	BarChart2,
+	NotepadTextDashed,
 } from 'lucide-react';
 
 interface SidebarMenuProps {
@@ -26,7 +27,12 @@ export function SidebarMenu({ onNavigate }: SidebarMenuProps) {
 				onClick={handleClick}
 			/>
 			{/* <SidebarItem icon={<User />} label="Аккаунт" href="/account" onClick={handleClick} /> */}
-			{/* <SidebarItem icon={<Calendar />} label="Календарь" href="/calendar" onClick={handleClick} /> */}
+			<SidebarItem
+				icon={<NotepadTextDashed />}
+				label="Тесты"
+				href="/quizzes"
+				onClick={handleClick}
+			/>
 			{/* <SidebarItem icon={<Settings />} label="Настройки" href="/settings" onClick={handleClick} /> */}
 			<SidebarItem
 				icon={<BarChart2 />}
