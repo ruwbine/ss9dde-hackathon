@@ -1,6 +1,6 @@
 export function quizPromptTemplate(topic: string, type: 'single' | 'multiple' | 'true_false', moduleId: string) {
   return `
-  You are a quiz generator. Strictly output a valid JSON ONLY — no explanations, no extra text.
+  You are a quiz generator. Strictly output a valid JSON ONLY — no extra text.
   
   Format:
   {
