@@ -15,6 +15,7 @@ interface QuizQuestionData {
 interface QuizData {
 	title: string;
 	description: string;
+	isCompleted: boolean;
 	questions: QuizQuestionData[];
 }
 
@@ -30,7 +31,7 @@ interface Props {
 
 export function QuizView({ quizQuestions, explanations }: Props) {
 	return (
-		<div className="max-h-[calc(100vh-40px)] overflow-y-auto px-2">
+		<div className="max-h-[calc(85vh-40px)] overflow-y-auto px-2">
 			<div>
 				<h1 className="text-2xl font-bold">{quizQuestions[0].title}</h1>
 				<p className="text-muted-foreground mt-1">

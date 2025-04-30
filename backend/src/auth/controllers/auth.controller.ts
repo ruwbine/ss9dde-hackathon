@@ -20,9 +20,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const response = await this.authService.login(loginUserDto);
-    console.log(response);
-    const token = response.data[0].access_token;
-
+    const token = response.access_token;
     res.cookie('access_token', token, {
       httpOnly: true,
       sameSite: 'lax',
@@ -30,6 +28,6 @@ export class AuthController {
       maxAge: 1000 * 60 * 60 * 24,
     });
 
-    return response;
+    return token;
   }
 }

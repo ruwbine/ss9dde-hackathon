@@ -41,10 +41,7 @@ export class AuthService {
       userId: user.id,
       email: user.email,
     });
-    return {
-      success: true,
-      data: [{ access_token: token }],
-    };
+    return { access_token: token };
   }
 
   async register(createUserDto: UserCreateDto): Promise<any> {
@@ -75,6 +72,6 @@ export class AuthService {
       email: createdUser.email,
     });
 
-    return {access_token: token};
+    return { access_token: token };
   }
 }

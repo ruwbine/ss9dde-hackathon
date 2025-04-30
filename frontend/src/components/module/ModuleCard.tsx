@@ -1,24 +1,31 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { IModule } from "@/types/module";
+// components/module/module-card.tsx
+'use client'; // This component uses client-side interactivity (DeleteButton)
 
-interface Props {
-  module: IModule;
-  onDelete?: (id: string) => void;
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { IModule } from '@/types/module'; // Import the type
+import { DeleteModuleButton } from './DeleteModuleButton';
+
+interface ModuleCardProps {
+	// Use consistent naming for props interfaces
+	module: IModule;
+	// onDelete prop is removed here, as DeleteModuleButton handles the action
 }
 
-export function ModuleCard({ module, onDelete }: Props) {
-  return (
-    <Card>
-      <CardHeader className="flex justify-between">
-        <CardTitle>{module.title}</CardTitle>
-        {onDelete && (
-          <Button variant="destructive" size="sm" onClick={() => onDelete(module.id)}>
-            Удалить
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="whitespace-pre-wrap">{module.content}</CardContent>
-    </Card>
-  );
+export function ModuleCard({ module }: ModuleCardProps) {
+	return (
+		<Card>
+			<CardHeader className="flex justify-between items-center">
+				{' '}
+				{/* Added items-center for better alignment */}
+				<CardTitle className="text-lg">{module.title}</CardTitle>{' '}
+				{/* Adjust title size if needed */}
+				{/* Render the Client Component DeleteButton */}
+				<DeleteModuleButton moduleId={module.id} />
+			</CardHeader>
+			{/* Use markdown rendering if content can have markdown, otherwise whitespace is fine */}
+			<CardContent className="whitespace-pre-wrap">
+				{module.content}
+			</CardContent>
+		</Card>
+	);
 }
