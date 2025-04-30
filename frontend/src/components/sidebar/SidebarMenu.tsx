@@ -1,10 +1,10 @@
 import { SidebarItem } from './SidebarItem';
 import {
 	Book,
-	// Calendar,
+	Calendar,
 	LogOut,
-	// Settings,
-	// User,
+	Settings,
+	User,
 	BarChart2,
 	NotepadTextDashed,
 } from 'lucide-react';
@@ -26,14 +26,14 @@ export function SidebarMenu({ onNavigate }: SidebarMenuProps) {
 				href="/courses"
 				onClick={handleClick}
 			/>
-			{/* <SidebarItem icon={<User />} label="Аккаунт" href="/account" onClick={handleClick} /> */}
+			<SidebarItem icon={<User />} label="Аккаунт" href="/account" onClick={handleClick} />
 			<SidebarItem
 				icon={<NotepadTextDashed />}
 				label="Тесты"
 				href="/quizzes"
 				onClick={handleClick}
 			/>
-			{/* <SidebarItem icon={<Settings />} label="Настройки" href="/settings" onClick={handleClick} /> */}
+			<SidebarItem icon={<Settings />} label="Настройки" href="/settings" onClick={handleClick} />
 			<SidebarItem
 				icon={<BarChart2 />}
 				label="Прогресс"
