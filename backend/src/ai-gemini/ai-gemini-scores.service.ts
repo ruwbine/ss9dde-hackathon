@@ -106,4 +106,14 @@ export class AiGeminiScoresService {
         });
       }
       
+      async calculateDifficulty(results: QuizResult[]): Promise<"easy" | "medium" | "hard"> {
+        if (results.length === 0) return 'easy';
+    
+        const avg = results.reduce((sum, r) => sum + (r.percentage || 0), 0) / results.length;
+    
+        if (avg >= 80) return 'hard';
+        if (avg < 50) return 'easy';
+        return 'medium';
+      }
+
 }    
