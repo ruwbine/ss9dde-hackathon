@@ -119,5 +119,41 @@ export async function submitQuizAnswers(
 	}
 }
 
-// Keep getAllQuizzes and getQuizById from the previous step
-// ...
+export async function getQuizQuestions(id: string){
+	try{
+
+		const response = await fetch(
+			`http://localhost:3050/ai-gemini/quiz/${id}/questions`,
+			{
+				// Assuming this is your submission endpoint
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					// Add any other headers like Authorization if needed
+				},
+			}
+		);
+	
+		if (!response.ok) {
+			const errorData = await response.text();
+			console.error(
+				`API error getting questions`,
+				response.status,
+				errorData
+			);
+			throw new Error(
+				`Failed to submit quiz ${id}: ${response.status} ${response.statusText}`
+			);
+		}
+	
+		// Assuming your backend returns some confirmation or result
+		const result = await response.json();
+		return result;
+	} catch (error) {
+	console.error(`Error submitting quiz ${id}:`, error);
+	throw error;
+	}
+};
+
+
+
