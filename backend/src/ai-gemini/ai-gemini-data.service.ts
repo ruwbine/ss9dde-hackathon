@@ -51,16 +51,6 @@ export class AiGeminiDataService {
         await this.quizRepository.remove(quiz);
 
       }
-      
-      async getQuestions(quizId: string): Promise<Question[]> {
-        return this.questionRepository.find({
-          where: {
-            quiz: { id: quizId },
-          },
-          relations: ['options'],
-        });
-      }
-      
 
       async updateQuestion(
         questionId: string,
@@ -111,23 +101,7 @@ export class AiGeminiDataService {
         });
       }
 
-      async getQuestionsByModuleId(moduleId: string): Promise<PublicQuestionResponseDto[]> {
-        const quizzes = await this.getQuizzesByModuleId(moduleId);
-        const allQuestions = await Promise.all(
-          quizzes.map(quiz => this.getQuestions(quiz.id))
-        );
-        const flatQuestions = allQuestions.flat();
-      
-        return flatQuestions.map(question => ({
-          id: question.id,
-          text: question.text,
-          type: question.type,
-          options: question.options.map(option => ({
-            id: option.id,
-            text: option.text,
-          })),
-        }));
-      }    
+       
       
       async getUserQuizResults(userId: string) {
         const results = await this.quizResultRepository.find({
@@ -147,4 +121,38 @@ export class AiGeminiDataService {
           },
         }));
       }
+
+
+      async getQuestions(quizId: string): Promise<PublicQuestionResponseDto[]> {
+        const questions = await this.questionRepository
+          .createQueryBuilder('question')
+          .leftJoinAndSelect('question.options', 'option') 
+          .where('question.quizId = :quizId', { quizId })
+          .getMany();
+      
+        return this.mapQuestions(questions);
+      }
+      
+      async mapQuestions(questions: any[]): Promise<PublicQuestionResponseDto[]> {
+        return questions.map(question => ({
+          id: question.id,
+          text: question.text,
+          type: question.type,
+          options: question.options.map((option: { id: string; text: string;  }) => ({
+            id: option.id,
+            text: option.text,
+          })),
+        }));
+      }
+      
+
+async getQuestionsByModuleId(moduleId: string): Promise<PublicQuestionResponseDto[]> {
+  const quizzes = await this.getQuizzesByModuleId(moduleId);
+  const allQuestions = await Promise.all(
+    quizzes.map(quiz => this.getQuestions(quiz.id))
+  );
+  return allQuestions.flat();
+}
+
+
 }

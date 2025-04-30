@@ -58,14 +58,11 @@ async deleteQuiz(@Param('id') id: string): Promise<void> {
 @Get('quiz/:quizId/questions')
 async getQuestionsByQuizId(
   @Param('quizId') quizId: string,
-): Promise<QuestionResponseDto[]> {
+): Promise<PublicQuestionResponseDto[]> {
   const questions = await this.aiGeminiDataService.getQuestions(quizId);
-  return questions.map((question) =>
-    plainToInstance(QuestionResponseDto, question, {
-      excludeExtraneousValues: true,
-    }),
-  );
+  return questions;
 }
+
 
 
   @Patch('rewrite-quize/:id')
