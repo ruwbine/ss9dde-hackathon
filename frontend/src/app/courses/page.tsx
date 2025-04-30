@@ -1,19 +1,15 @@
-import { cookies } from 'next/headers';
-
 import { CourseCard } from '@/components/course/CourseCard';
 import { CreateCourseDialog } from '@/components/course/CreateCourseDialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { CourseDto, fetchCourses } from '@/lib/courses/courses.api';
 import { ApiResponse } from '@/types/api/api-response.interface';
-
-
+import { getAuthToken } from '@/lib/modules/data';
 
 export default async function CoursesPage() {
-	const token = (await cookies()).get('access_token')?.value;
+	const token = await getAuthToken();
 	const response: ApiResponse<CourseDto> = await fetchCourses(token || '');
 	const courses = response.data;
-
 
 	try {
 	} catch (error) {
