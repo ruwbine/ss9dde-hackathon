@@ -21,6 +21,7 @@ export async function fetchCourses(token: string): Promise<ApiResponse<any>> {
 		cache: 'no-store',
 	});
 
+
 	if (!res.ok) throw new Error('Ошибка загрузки курсов');
 	return res.json();
 }
