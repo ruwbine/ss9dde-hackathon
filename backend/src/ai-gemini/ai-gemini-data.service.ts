@@ -154,5 +154,17 @@ async getQuestionsByModuleId(moduleId: string): Promise<PublicQuestionResponseDt
   return allQuestions.flat();
 }
 
+async getQuizByTitle(title: string): Promise<Quiz> {
+  const quiz = await this.quizRepository.findOne({
+    where: { title },
+    relations: ['questions', 'explanations', 'module', 'tags'],
+  });
+
+  if (!quiz) {
+    throw new NotFoundException(`Quiz with title "${title}" not found`);
+  }
+
+  return quiz;
+}
 
 }

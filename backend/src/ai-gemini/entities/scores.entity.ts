@@ -29,5 +29,6 @@ export class QuizResult {
 
     @Column()
     completedAt: Date;
+
 }
   

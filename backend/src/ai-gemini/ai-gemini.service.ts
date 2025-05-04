@@ -111,7 +111,6 @@ async handleRequest(
   return { explanations, quizQuestions: [quiz] };
 }
 
-
-  }
+}
   
 

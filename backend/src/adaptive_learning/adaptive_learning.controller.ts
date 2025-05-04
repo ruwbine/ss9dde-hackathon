@@ -4,6 +4,7 @@ import { User } from 'src/users/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { GeneratingAdaptiveQuizService } from './adaptive_learning_generation_adaptive_quiz.service';
+import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-insigths.service';
 
 @Controller('adaptive-learning')
 export class AdaptiveLearningController {
@@ -23,18 +24,17 @@ export class AdaptiveLearningController {
   async generateAdaptiveQuiz(
     @User() user: IUser,
     @Body() body: {
-      topic: string;
       questionType: 'single' | 'multiple' | 'true_false';
       moduleId: string;
     }
   ) {
-    const { topic, questionType, moduleId } = body;
+    const { questionType, moduleId } = body;
 
     return this.adaptiveQuizService.generateAdaptiveQuiz(
       user.id,
-      topic,
       questionType,
       moduleId
     );
   }
+
 }

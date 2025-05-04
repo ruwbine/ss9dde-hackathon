@@ -97,7 +97,7 @@ export class AiGeminiScoresService {
         return this.quizResultRepository.find({
           where: { userId },
           order: { completedAt: 'DESC' },
-          take: 4,
+          take: 10,
           relations: {
             quiz: {
               tags: true,
@@ -115,5 +115,12 @@ export class AiGeminiScoresService {
         if (avg < 50) return 'easy';
         return 'medium';
       }
+
+      async countCompletedResultsByUser(userId: string): Promise<number> {
+        return this.quizResultRepository.count({
+          where: { userId },
+        });
+      }
+      
 
 }    
