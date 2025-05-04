@@ -81,17 +81,19 @@ export interface QuizSubmissionPayload {
 
 export async function submitQuizAnswers(
 	quizId: string,
+	token,
 	payload: QuizSubmissionPayload
 ): Promise<any> {
 	// Adjust return type based on your backend response
 	try {
 		const response = await fetch(
-			`http://localhost:3050/ai-gemini/submitQuizAnswers/${quizId}`,
+			`http://localhost:3050/scores/${quizId}/submit`,
 			{
 				// Assuming this is your submission endpoint
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
 					// Add any other headers like Authorization if needed
 				},
 				body: JSON.stringify(payload),
@@ -119,9 +121,8 @@ export async function submitQuizAnswers(
 	}
 }
 
-export async function getQuizQuestions(id: string){
-	try{
-
+export async function getQuizQuestions(id: string) {
+	try {
 		const response = await fetch(
 			`http://localhost:3050/ai-gemini/quiz/${id}/questions`,
 			{
@@ -133,7 +134,7 @@ export async function getQuizQuestions(id: string){
 				},
 			}
 		);
-	
+
 		if (!response.ok) {
 			const errorData = await response.text();
 			console.error(
@@ -145,15 +146,12 @@ export async function getQuizQuestions(id: string){
 				`Failed to submit quiz ${id}: ${response.status} ${response.statusText}`
 			);
 		}
-	
+
 		// Assuming your backend returns some confirmation or result
 		const result = await response.json();
 		return result;
 	} catch (error) {
-	console.error(`Error submitting quiz ${id}:`, error);
-	throw error;
+		console.error(`Error submitting quiz ${id}:`, error);
+		throw error;
 	}
-};
-
-
-
+}
