@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { IUser } from '../interfaces/user.interface';
+import { QuizResult } from 'src/ai-gemini/entities/scores.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity implements IUser {

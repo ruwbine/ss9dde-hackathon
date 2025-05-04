@@ -2,10 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy } from "@nestjs/microservices";
-import { Explanation, IQuiz, TextResponse } from "./interfaces/request.interface";
+import { TextResponse } from "./interfaces/request.interface";
 import { QuizDataSchema } from "./schemas/request.schema";
 import { quizPromptTemplate } from "./promts/gemini-ai.promts";
 import { QuizDataService } from "./repository/quiz.repository";
+import { ModulesRepository } from "src/modules/repositories/modules.repository";
+import { buildQuizFromData } from "./utilits/quizData.utils";
 
 @Injectable()
 export class AiGeminiService {
@@ -18,6 +20,7 @@ export class AiGeminiService {
     private readonly configService: ConfigService,
     @Inject('REQUEST_SERVICE') private readonly client: ClientProxy,
     private readonly quizDataService:QuizDataService, 
+    private readonly moduleRepository: ModulesRepository ,
   ) {
     this.baseUrl = this.configService.get<string>('BASE_URL') || '';
     this.apiKey = this.configService.get<string>('API_KEY') || '';
@@ -46,65 +49,68 @@ async generateText(prompt: string): Promise<string> {
   return response.text();
 }
 
-async generateQuizData(topic: string , questionType: 'single' | 'multiple' | 'true_false') {
-  const prompt = quizPromptTemplate(topic , questionType );
+async generateQuizData(topic: string, questionType: 'single' | 'multiple' | 'true_false', moduleId: string) {
+  const prompt = quizPromptTemplate(topic, questionType, moduleId);
   const rawText = await this.generateText(prompt);
 
+  const cleaned = (() => {
+    try {
+      const match = rawText.match(/{[\s\S]*}/)?.[0];
+      if (!match) throw new Error('No JSON object found');
+      return match;
+    } catch (e) {
+      console.error('Failed to extract JSON:', e);
+      throw new Error('Failed to extract JSON');
+    }
+  })();
+
+  const json = (() => {
+    try {
+      return JSON.parse(cleaned);
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError);
+      throw new Error('Failed to parse JSON');
+    }
+  })();
+
   try {
-    const cleaned = rawText.replace(/```json|```/g, '').trim();
-    const json = JSON.parse(cleaned);
     const parsed = QuizDataSchema.parse(json);
+    parsed.quiz.moduleId = moduleId;
     return parsed;
-  } catch (e) {
-    console.error('Failed to validate or parse response:', e);
-    throw new Error('Failed to generate valid quiz data');
-  }
-}
-
-async handleRequest(textForQuiz: string , questionType: 'single' | 'multiple' | 'true_false' ): Promise<TextResponse> {
-  try {
-    if (!textForQuiz || typeof textForQuiz !== 'string') {
-      throw new Error('Invalid input: textForQuiz must be a non-empty string');
-    }
-
-    const quizData = await this.generateQuizData(textForQuiz , questionType );
-
-    if (!quizData || !quizData.quiz || !Array.isArray(quizData.quiz.questions)) {
-      throw new Error('Invalid quiz data received');
-    }
-    const explanations: Explanation[] = quizData.explanations || [];
-    const quizQuestions: IQuiz = {
-      title: quizData.quiz.title,
-      description: quizData.quiz.description,
-      questions: quizData.quiz.questions.map((q) => ({
-        text: q.text,
-        type: q.type ??
-          (q.options.length === 2 &&
-            q.options.some((o) => o.text.toLowerCase() === 'true') &&
-            q.options.some((o) => o.text.toLowerCase() === 'false')
-            ? 'true_false'
-            : q.options.filter((o) => o.isCorrect).length > 1
-            ? 'multiple'
-            : 'single'),
-        options: q.options.map((o) => ({
-          text: o.text,
-          isCorrect: o.isCorrect,
-        })),
-      })),
-      isCompleted: false,
-    };    
-    await this.quizDataService.saveQuizData(quizQuestions, explanations);
-    return { explanations, quizQuestions: [quizQuestions] };
-  } catch (error) {
-    this.logger.error('Error generating quiz', {
-      error: error.message,
-      stack: error.stack,
-    });
-    throw new Error('An error occurred while generating the quiz');
+  } catch (validationError) {
+    console.error('Failed to validate JSON structure:', validationError);
+    throw new Error('Invalid quiz data structure');
   }
 }
 
 
+async handleRequest(
+  textForQuiz: string,
+  questionType: 'single' | 'multiple' | 'true_false',
+  moduleId: string
+): Promise<TextResponse> {
+  if (!textForQuiz?.trim()) {
+    throw new Error('Invalid input: textForQuiz must be a non-empty string');
   }
+
+  const module = await this.moduleRepository.findOne(moduleId);
+  if (!module) {
+    throw new Error(`Module with ID ${moduleId} not found`);
+  }
+
+  const quizData = await this.generateQuizData(textForQuiz, questionType, moduleId);
+  if (!quizData?.quiz?.questions?.length) {
+    throw new Error('Invalid quiz data received');
+  }
+
+  const explanations = quizData.explanations ?? [];
+  const quiz = buildQuizFromData(quizData.quiz, module.id);
+
+  await this.quizDataService.saveQuizData(quiz, explanations, module);
+
+  return { explanations, quizQuestions: [quiz] };
+}
+
+}
   
 

@@ -24,7 +24,6 @@ export class AssignmentEntity implements IAssignment {
     @Column()
     description: string;
 
-
     @Column()
     moduleId: string;
 

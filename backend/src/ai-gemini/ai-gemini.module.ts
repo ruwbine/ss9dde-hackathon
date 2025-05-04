@@ -10,6 +10,11 @@ import { QuestionOption } from './entities/request-quiz-options.entity';
 import { ExplanationEntity } from './entities/requests-explonation.entity';
 import { QuizDataService } from './repository/quiz.repository';
 import { AiGeminiDataService } from './ai-gemini-data.service';
+import { ModulesModule } from 'src/modules/modules.module';
+import { AiGeminiScoresService } from './ai-gemini-scores.service';
+import { QuizResult } from './entities/scores.entity';
+import { AIGeminiScoresController } from './ai-gemini.scores.controller';
+import { QuizTagEntity } from './entities/tags.entity';
 
 @Module({
   imports: [
@@ -17,15 +22,19 @@ import { AiGeminiDataService } from './ai-gemini-data.service';
       QuestionOption,
       Question,
       Quiz,
-      ExplanationEntity
+      ExplanationEntity,
+      QuizResult,
+      QuizTagEntity,
   ]),
+    ModulesModule,
     RabbitmqModule,
     HttpModule,
   ],
   providers: [
-    AiGeminiService,QuizDataService,AiGeminiDataService,
+    AiGeminiService,QuizDataService,AiGeminiDataService,AiGeminiScoresService,
   ],
-  controllers: [AiGeminiController],
-  exports: [AiGeminiService,AiGeminiDataService,QuizDataService],
+  controllers: [AiGeminiController,AIGeminiScoresController],
+  exports: [AiGeminiService,AiGeminiDataService,QuizDataService,AiGeminiScoresService],
 })
 export class AiGeminiModule {}
+

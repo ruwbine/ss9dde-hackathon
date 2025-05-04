@@ -5,6 +5,10 @@ export class TextRequest {
   @IsString()
   @IsNotEmpty()
   textForQuiz: string;
+
+  @IsString()
+  @IsNotEmpty()
+  moduleId: string;
   
   @IsString()
   @IsNotEmpty()

@@ -13,6 +13,7 @@ import { AssignmentModule } from './assignment/assignment.module';
 import { ParagraphsModule } from './paragraphs/paragraphs.module';
 import { AiGeminiModule } from './ai-gemini/ai-gemini.module';
 import { ConfigModule } from '@nestjs/config';
+import { AdaptiveLearningModule } from './adaptive_learning/adaptive_learning.module';
 import { ApiResponseInterceptor } from './common/api-response/interceptors/api-response.interceptor';
 
 @Module({
@@ -30,6 +31,7 @@ import { ApiResponseInterceptor } from './common/api-response/interceptors/api-r
     AssignmentModule,
     ParagraphsModule,
     AiGeminiModule,
+    AdaptiveLearningModule,
   ],
   controllers: [AppController],
   providers: [AppService,

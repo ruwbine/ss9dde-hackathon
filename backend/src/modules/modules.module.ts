@@ -9,10 +9,10 @@ import {CoursesModule} from "../courses/courses.module";
 @Module({
   imports: [
       TypeOrmModule.forFeature([ModuleEntity]),
-      CoursesModule
+      CoursesModule,
   ],
   providers: [ModulesService, ModulesRepository],
   controllers: [ModulesController],
-    exports: [ModulesService],
+    exports: [ModulesService , ModulesRepository],
 })
 export class ModulesModule {}

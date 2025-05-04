@@ -1,31 +1,10 @@
 import { Expose, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { QuestionResponseDto } from './question-response.dto';
 
-export class QuestionResponseDto {
-  @IsString()
-  @Expose() 
-  id: string;
 
-  @IsString()
-  @Expose() 
-  text: string;
 
-  @IsString()
-  @Expose() 
-  type: 'single' | 'multiple' | 'true_false';
 
-  @Expose()
-  @Type(() => QuestionOptionDto)
-  options: QuestionOptionDto[];
-}
-
-export class QuestionOptionDto {
-    @Expose()
-    text: string;
-  
-    @Expose()
-    isCorrect: boolean;
-  }
 
 export class ExplanationResponseDto {
   @IsString()
@@ -69,31 +48,3 @@ export class QuizResponseDto {
   @Type(() => ExplanationResponseDto)
   explanations: ExplanationResponseDto[];
 }
-
-export class UpdateQuestionOptionDto {
-    @IsOptional()
-    @IsString()
-    id?: string;
-  
-    @IsString()
-    text: string;
-  
-    @IsBoolean()
-    isCorrect: boolean;
-  }
-  
-  export class UpdateQuestionDto {
-    @IsOptional()
-    @IsString()
-    text?: string;
-  
-    @IsOptional()
-    @IsString()
-    type?: 'single' | 'multiple' | 'true_false';
-  
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => UpdateQuestionOptionDto)
-    options?: UpdateQuestionOptionDto[];
-  }

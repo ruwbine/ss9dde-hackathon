@@ -1,6 +1,9 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Question } from "./request-quiz-questions.entity";
 import { ExplanationEntity } from "./requests-explonation.entity";
+import { QuizResult } from "./scores.entity";
+import { ModuleEntity } from "src/modules/entities/module.entity";
+import { QuizTagEntity } from "src/ai-gemini/entities/tags.entity";
  
 
 @Entity()
@@ -22,5 +25,14 @@ export class Quiz {
 
     @OneToMany(() => ExplanationEntity, explanation => explanation.quiz, { cascade: true })
     explanations: ExplanationEntity[];
- 
+
+    @OneToMany(() => QuizResult, (quizResults) => quizResults.quiz)
+    quizResults: QuizResult[];
+
+    @ManyToOne(() => ModuleEntity, module => module.quizzes, { onDelete: 'CASCADE' })
+    module: ModuleEntity;
+
+    @OneToMany(() => QuizTagEntity, tag => tag.quiz, { cascade: true })
+    tags: QuizTagEntity[];
+
 }
