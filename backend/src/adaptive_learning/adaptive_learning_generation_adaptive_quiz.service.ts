@@ -33,7 +33,7 @@ export class GeneratingAdaptiveQuizService {
         throw new Error('Quiz generation is allowed only if weak topics are available.');
       }
     
-      const difficulty: 'easy' = 'easy'; // Всегда лёгкий уровень сложности
+      const difficulty: 'easy' = 'easy';
     
       const existingQuizzes = await this.aiGeminiDataService.getQuizzesByModuleId(moduleId);
       if (!existingQuizzes || existingQuizzes.length === 0) {
