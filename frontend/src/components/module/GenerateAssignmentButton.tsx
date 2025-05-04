@@ -9,9 +9,10 @@ interface GenerateAssignmentButtonProps {
 	moduleId: string;
 }
 
-export function GenerateAssignmentButton({
-	moduleId,
-}: GenerateAssignmentButtonProps) {
+export function GenerateAssignmentButton(
+	{ moduleId }: GenerateAssignmentButtonProps,
+	token: string
+) {
 	// const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -29,6 +30,9 @@ export function GenerateAssignmentButton({
 				`${assignmentApiUrl}/modules/${moduleId}/generate-assignment`,
 				{
 					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
 					// Add headers like Authorization if needed on the client-side fetch
 				}
 			);
