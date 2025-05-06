@@ -46,7 +46,7 @@ export function QuizGeneratorDialog() {
 					body: JSON.stringify({
 						QuestionType: questionType,
 						textForQuiz: textForQuiz,
-						moduleId: '540e86f0-ed25-425c-9cd3-f951239baf70'
+						moduleId: '9a498dd4-168b-48c8-b97c-aefd1f0d700d',
 					}),
 				}
 			);
@@ -54,7 +54,7 @@ export function QuizGeneratorDialog() {
 			if (!res.ok) {
 				throw new Error('Сервер вернул ошибку');
 			}
-			
+
 			const response = await res.json();
 			console.log(response);
 			const data = response.data[0];

@@ -3,9 +3,14 @@
 import { Metadata } from 'next';
 import { DashboardOverview } from '@/components/dashboard/DashboardOverview';
 import { ScorePercentageChart } from '@/components/dashboard/ScorePercentageChart';
-import { fetchUserData, QuizResult } from '@/lib/dashboard/data';
+import {
+	fetchUserData,
+	getInsightData,
+	QuizResult,
+} from '@/lib/dashboard/data';
 import { QuizCompletionTable } from '@/components/dashboard/QuizCompletionOverview';
 import { getAuthToken } from '@/lib/modules/data';
+import { SkillsInsightsDashboard } from '@/components/dashboard/recommendations/SkillsInsights';
 
 export const metadata: Metadata = {
 	title: 'Dashboard | Adaptive Learning Platform',
@@ -19,9 +24,10 @@ export default async function DashboardPage() {
 	let userData: QuizResult[] = [];
 	let error: string | null = null;
 
+	const insightsData = await getInsightData(token);
 	try {
 		// Fetch data directly in the server component
-		let data = await fetchUserData(token);
+		const data = await fetchUserData(token);
 		userData = data;
 		// Sort data by completion date, most recent first, if not already sorted by backend
 		userData.sort(
@@ -54,6 +60,9 @@ export default async function DashboardPage() {
 
 						{/* Recent Completions Table */}
 						<QuizCompletionTable results={userData} />
+						<SkillsInsightsDashboard
+							insightData={insightsData[0]}
+						/>
 					</>
 				)}
 			</main>

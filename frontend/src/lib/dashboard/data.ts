@@ -327,9 +327,32 @@ export async function fetchUserData(token): Promise<QuizResult[]> {
 		const server_response = await response.json();
 		return server_response.data;
 	} catch (error) {
-		throw new Error(
-			`Failed to fetch data: ${response.status} ${response.statusText}`,
-			error
+		throw new Error(`Failed to fetch data: `, error);
+	}
+}
+
+export async function getInsightData(token) {
+	const response = await fetch(
+		'http://localhost:3050/adaptive-learning/insights',
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	);
+
+	if (!response.ok) {
+		const errorData = await response.text();
+		console.error(
+			`API Error fetching scores insights`,
+			response.status,
+			errorData
 		);
 	}
+
+	const server_response = await response.json();
+	console.log(server_response.data[0]);
+	return server_response.data;
 }

@@ -45,7 +45,7 @@ export default function AuthPage() {
 			toast.success(
 				`Успешно: ${type === 'login' ? 'вход' : 'регистрация'}`
 			);
-			router.push('/progress');
+			router.push('/dashboard');
 		} catch (err: any) {
 			setErrorMessage(err.message);
 			setShowError(true);
