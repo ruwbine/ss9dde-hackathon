@@ -11,6 +11,8 @@ import {
 import { QuizCompletionTable } from '@/components/dashboard/QuizCompletionOverview';
 import { getAuthToken } from '@/lib/modules/data';
 import { SkillsInsightsDashboard } from '@/components/dashboard/recommendations/SkillsInsights';
+import { AdaptiveLearningQuizSection } from '@/components/dashboard/generate-adaptive/AdaptiveLearningQuizSection';
+import { QuizData } from '@/lib/dashboard/recommendations/recommendations.api';
 
 export const metadata: Metadata = {
 	title: 'Dashboard | Adaptive Learning Platform',
@@ -41,6 +43,29 @@ export default async function DashboardPage() {
 		// In a real app, you might render a specific error component
 	}
 
+	const currentModuleId = '9a498dd4-168b-48c8-b97c-aefd1f0d700d';
+	// const currentModuleId = null; // Example for testing missing module ID
+
+	const handleQuizSuccess = (generatedQuizData: QuizData) => {
+		console.log('Quiz generated successfully! Data:', generatedQuizData);
+		if (
+			generatedQuizData.quizQuestions &&
+			generatedQuizData.quizQuestions.length > 0
+		) {
+			const quizTitle = generatedQuizData.quizQuestions[0].title;
+			// alert(`Quiz "${quizTitle}" created! Check console for details.`);
+			// Potentially navigate to the quiz or update UI
+			// e.g., router.push(`/quiz/${generatedQuizData.quizQuestions[0].id}`); // Assuming quiz has an ID
+		} else {
+			// alert("Quiz generated, but it seems empty. Check console.");
+		}
+	};
+
+	const handleQuizError = (error: Error) => {
+		console.error('Failed to generate quiz:', error.message);
+		// alert(`Error generating quiz: ${error.message}`);
+	};
+
 	return (
 		<div className="flex min-h-screen w-full flex-col">
 			<main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -62,6 +87,10 @@ export default async function DashboardPage() {
 						<QuizCompletionTable results={userData} />
 						<SkillsInsightsDashboard
 							insightData={insightsData[0]}
+						/>
+						<AdaptiveLearningQuizSection
+							moduleId={currentModuleId}
+							token={token}
 						/>
 					</>
 				)}
