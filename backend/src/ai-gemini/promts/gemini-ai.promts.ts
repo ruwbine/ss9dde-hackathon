@@ -1,4 +1,7 @@
-export function quizPromptTemplate(topic: string, type: 'single' | 'multiple' | 'true_false', moduleId: string) {
+export function quizPromptTemplate(
+  topic: string,
+  type: 'single' | 'multiple' | 'true_false',
+) {
   return `
   You are a quiz generator. Strictly output a valid JSON ONLY — no extra text.
   
@@ -7,7 +10,6 @@ export function quizPromptTemplate(topic: string, type: 'single' | 'multiple' | 
     "quiz": {
       "title": "string",
       "description": "string",
-      "moduleId": "${moduleId}",
       "questions": [
         {
           "text": "string",
@@ -25,11 +27,12 @@ export function quizPromptTemplate(topic: string, type: 'single' | 'multiple' | 
   
   Quiz topic: "${topic}". Question type: "${type}".
   
-  ${type === 'multiple'
-    ? 'Each question should have 2-4 options, at least 2 correct.'
-    : type === 'single'
-    ? 'Each question should have only 1 correct option.'
-    : 'Each question is a true/false statement.'
+  ${
+    type === 'multiple'
+      ? 'Each question should have 2-4 options, at least 2 correct.'
+      : type === 'single'
+        ? 'Each question should have only 1 correct option.'
+        : 'Each question is a true/false statement.'
   }
   `;
-}  
+}
