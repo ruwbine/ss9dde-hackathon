@@ -5,6 +5,8 @@ import { AiGeminiService } from 'src/ai-gemini/ai-gemini.service';
 import { QuizResult } from 'src/ai-gemini/entities/scores.entity';
 import { IAdaptiveLearningTags } from './interfaces/adaptive-learning-tags.interface';
 import { AdaptiveLearningRecommendationsService } from './recommendations/services/recommendations.service';
+import { AdaptiveLearningMapper } from './mappers/tags.mapper';
+import { IS_BOOLEAN_STRING } from 'class-validator';
 
 type TInsights = {
   summary: string,
@@ -31,8 +33,6 @@ export class AdaptiveLearningService {
   // 3 сделать интерфейсы, чтобы правильно подбирались типы
 
 
-  // если у пользователя меньше 5 пройденных тестов - не надо генерировать теги
-  // если у него больше 5 - можем запускать генерацию тегов
 
   // когда нужно генерировать, чтобы не делать часто запросы в ИИ? 
   async generateInsights(userId: string) {
@@ -46,7 +46,10 @@ export class AdaptiveLearningService {
     }
 
     if(completedCount % 5 != 0){
-      return this.insightsService.getInsights(userId)
+      const insights = await this.insightsService.getInsights(userId);
+      return {
+        ...insights, topics: AdaptiveLearningMapper.ToTopicsObject(insights)
+      }
     }
    else {
     const scoreHistory =
@@ -85,7 +88,6 @@ export class AdaptiveLearningService {
       { correct: number; wrong: number; history: number[] }
     > = {};
     const decayFactor = 0.9;
-    console.log(results);
 
     results.sort(
       (a, b) =>
