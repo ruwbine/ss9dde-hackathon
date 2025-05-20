@@ -81,17 +81,14 @@ export class AiGeminiService {
 
     const response = result.response;
     const text: string = response.text();
-
     if(!text){
       throw new Error('Gemini API returned an empty response')
     }
 
     let parsedResponse: any;
     try {
-      // Attempt to parse the response as JSON
       parsedResponse = JSON.parse(text);
     } catch (jsonError) {
-      // If not valid JSON, try to extract JSON from markdown code blocks
       const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
       if (jsonMatch && jsonMatch[1]) {
         try {
@@ -103,7 +100,7 @@ export class AiGeminiService {
         throw new Error(`Gemini API response was not valid JSON: ${jsonError}`);
       }
     }
-
+    
     const validatedData = schema.parse(parsedResponse);
     return validatedData;
   } catch (error) {

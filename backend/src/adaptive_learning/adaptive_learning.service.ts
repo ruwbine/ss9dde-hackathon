@@ -4,6 +4,7 @@ import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-in
 import { AiGeminiService } from 'src/ai-gemini/ai-gemini.service';
 import { QuizResult } from 'src/ai-gemini/entities/scores.entity';
 import { IAdaptiveLearningTags } from './interfaces/adaptive-learning-tags.interface';
+import { AdaptiveLearningRecommendationsService } from './recommendations/services/recommendations.service';
 
 type TInsights = {
   summary: string,
@@ -21,7 +22,7 @@ export class AdaptiveLearningService {
   constructor(
     private readonly aiGeminiScoresService: AiGeminiScoresService,
     private readonly insigthsSaveService: AdaptiveLearningInsigthsSaveService,
-    private readonly aiGeminiService: AiGeminiService,
+    private readonly recommendationService: AdaptiveLearningRecommendationsService
   ) {}
 
 
@@ -59,31 +60,22 @@ export class AdaptiveLearningService {
     //   // можно вынести в отдельный тип или интерфейс и потом переиспользовать, просто создавая как есть новый объект.
     // }
 
-    const results =
+    const scoreHistory =
       await this.aiGeminiScoresService.getRecentResultsByUser(userId);
   
-      const topicsToLearn = await this.generateTags(results);
+      const topics = await this.generateTags(scoreHistory);
 
       // 1 создать схему рекомендации чтобы легче было сказать gemini, что делать
       // отправлять не каждый тэг по отдельности, а все сразу
       // сохранять в бд
 
-      const recommendations: any[] = [];
-    // const recommendations = await Promise.all(
-    //   weakTopics.map(async (topic) => {
-    //     const prompt = `A student is weak in the topic "${topic}". Generate a short(it must be very short , only 20 words ), motivational, and practical recommendation to help them improve this topic.`;
-    //     const suggestion = await this.aiGeminiService.generateText(prompt);
-    //     return {
-    //       topic,
-    //       suggestion: suggestion.trim(),
-    //     };
-    //   }),
-    // );
+      const recommendations = await this.recommendationService.processRecommendations(topics.weak)
+    
 
     const insights = {
-      summary: `You've taken ${results.length} recent quizzes.`,
-      topics: topicsToLearn,
-      scoreHistory: results, 
+      summary: `You've taken ${scoreHistory.length} recent quizzes.`,
+      topics,
+      scoreHistory, 
       recommendations,
       nextStep: 'Try a quiz focused on your weak and declining topics to improve.',
     };

@@ -7,12 +7,13 @@ import { ModulesModule } from 'src/modules/modules.module';
 import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-insigths.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InsightsEntity } from './entities/insights.entity';
+import { AdaptiveLearningRecommendationsService } from './recommendations/services/recommendations.service';
 
 @Module({
   imports:[TypeOrmModule.forFeature([InsightsEntity ]),
   AiGeminiModule,
   ModulesModule,],
-  providers: [AdaptiveLearningService,GeneratingAdaptiveQuizService,AdaptiveLearningInsigthsSaveService,],
+  providers: [AdaptiveLearningService,GeneratingAdaptiveQuizService,AdaptiveLearningInsigthsSaveService, AdaptiveLearningRecommendationsService],
   controllers: [AdaptiveLearningController],
   exports: [AdaptiveLearningService,GeneratingAdaptiveQuizService,AdaptiveLearningInsigthsSaveService],
 })

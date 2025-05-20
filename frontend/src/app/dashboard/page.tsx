@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 		// In a real app, you might render a specific error component
 	}
 
-	const currentModuleId = '9a498dd4-168b-48c8-b97c-aefd1f0d700d';
+	const currentModuleId = 'efb7ae9e-2e03-4135-8ded-7dcc320358e4';
 	// const currentModuleId = null; // Example for testing missing module ID
 
 	const handleQuizSuccess = (generatedQuizData: QuizData) => {

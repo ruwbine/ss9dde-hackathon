@@ -46,7 +46,7 @@ export function QuizGeneratorDialog() {
 					body: JSON.stringify({
 						QuestionType: questionType,
 						textForQuiz: textForQuiz,
-						moduleId: '9a498dd4-168b-48c8-b97c-aefd1f0d700d',
+						moduleId: 'efb7ae9e-2e03-4135-8ded-7dcc320358e4',
 					}),
 				}
 			);
