@@ -8,6 +8,7 @@ import { quizPromptTemplate } from './promts/gemini-ai.promts';
 import { QuizDataService } from './repository/quiz.repository';
 import { ModulesRepository } from 'src/modules/repositories/modules.repository';
 import { buildQuizFromData } from './utilits/quizData.utils';
+import z from 'zod';
 
 @Injectable()
 export class AiGeminiService {
@@ -48,6 +49,70 @@ export class AiGeminiService {
     const response = await result.response;
 
     return response.text();
+  }
+
+
+  /**
+ * Generates a structured response from the Gemini API, validated by a Zod schema.
+ *
+ * @param prompt The prompt to send to the Gemini API.
+ * @param schema The Zod schema to validate the response against.
+ * @param config Optional configuration for the Gemini API.
+ * @returns A promise that resolves to the validated structured response.
+ * @throws Error if the API call fails or the response does not match the schema.
+ */
+  async generateStructuredResponse<T extends z.ZodSchema>(prompt: string, schema: T): Promise<z.infer<T>>{
+
+    try {
+
+    
+    const model = this.genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.95,
+        topK: 40,
+      },
+    });
+
+    const result = await model.generateContent({
+      contents: [{role: 'user', parts: [{text: prompt}]}]
+    })
+
+    const response = result.response;
+    const text: string = response.text();
+
+    if(!text){
+      throw new Error('Gemini API returned an empty response')
+    }
+
+    let parsedResponse: any;
+    try {
+      // Attempt to parse the response as JSON
+      parsedResponse = JSON.parse(text);
+    } catch (jsonError) {
+      // If not valid JSON, try to extract JSON from markdown code blocks
+      const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch && jsonMatch[1]) {
+        try {
+          parsedResponse = JSON.parse(jsonMatch[1]);
+        } catch (innerJsonError) {
+          throw new Error(`Gemini API response was not valid JSON and could not be extracted from markdown: ${innerJsonError}`);
+        }
+      } else {
+        throw new Error(`Gemini API response was not valid JSON: ${jsonError}`);
+      }
+    }
+
+    const validatedData = schema.parse(parsedResponse);
+    return validatedData;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(`Response validation failed: ${error.errors.map(e => e.message).join(', ')}`);
+    }
+    throw new Error(`Failed to get or parse response from Gemini API: ${error}`);
+  }
+
   }
 
   async generateQuizData(

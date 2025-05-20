@@ -19,6 +19,8 @@ export class AdaptiveLearningController {
     return this.adaptiveService.generateInsights(user.id);
   }
 
+  
+
   @UseGuards(JwtAuthGuard)
   @Post('generate')
   async generateAdaptiveQuiz(

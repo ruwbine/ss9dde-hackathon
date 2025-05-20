@@ -2,6 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { AiGeminiScoresService } from 'src/ai-gemini/ai-gemini-scores.service';
 import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-insigths.service';
 import { AiGeminiService } from 'src/ai-gemini/ai-gemini.service';
+import { QuizResult } from 'src/ai-gemini/entities/scores.entity';
+import { IAdaptiveLearningTags } from './interfaces/adaptive-learning-tags.interface';
+
+type TInsights = {
+  summary: string,
+  topics: {
+    strong: string[],
+    weak: string[]
+    improving: string[],
+    declining: string[]
+  }
+}
+
 
 @Injectable()
 export class AdaptiveLearningService {
@@ -11,27 +24,78 @@ export class AdaptiveLearningService {
     private readonly aiGeminiService: AiGeminiService,
   ) {}
 
+
+  // 1 функция - 1 ответственность должна быть (SRP) - S
+
+  // 1 проанализровать, как работает код, и правильно ли он работает сейчас?
+  // 2 разделить эту функцию на несколько частей, чтобы легче было поддерживать код
+  // 3 сделать интерфейсы, чтобы правильно подбирались типы
+
+
+  // если у пользователя меньше 5 пройденных тестов - не надо генерировать теги
+  // если у него больше 5 - можем запускать генерацию тегов
+
+  // когда нужно генерировать, чтобы не делать часто запросы в ИИ? 
   async generateInsights(userId: string) {
+
+    //получаем количество пройденных тестов
     const completedCount =
       await this.aiGeminiScoresService.countCompletedResultsByUser(userId);
 
-    if (completedCount < 5) {
-      return {
-        summary: `Complete ${5 - completedCount} more quizzes to get personalized insights.`,
-        topics: {
-          strong: [],
-          weak: [],
-          improving: [],
-          declining: [],
-        },
-        scoreHistory: [],
-        recommendations: [],
-        nextStep: null,
-      };
-    }
+    // if (completedCount < 5) {
+    //   return {
+    //     summary: `Complete ${5 - completedCount} more quizzes to get personalized insights.`,
+    //     topics: {
+    //       strong: [],
+    //       weak: [],
+    //       improving: [],
+    //       declining: [],
+    //     },
+    //     scoreHistory: [], 
+    //     recommendations: [], // какой тут тип?
+    //     nextStep: null,
+    //   };
+
+    //   // можно вынести в отдельный тип или интерфейс и потом переиспользовать, просто создавая как есть новый объект.
+    // }
 
     const results =
       await this.aiGeminiScoresService.getRecentResultsByUser(userId);
+  
+      const topicsToLearn = await this.generateTags(results);
+
+      // 1 создать схему рекомендации чтобы легче было сказать gemini, что делать
+      // отправлять не каждый тэг по отдельности, а все сразу
+      // сохранять в бд
+
+      const recommendations: any[] = [];
+    // const recommendations = await Promise.all(
+    //   weakTopics.map(async (topic) => {
+    //     const prompt = `A student is weak in the topic "${topic}". Generate a short(it must be very short , only 20 words ), motivational, and practical recommendation to help them improve this topic.`;
+    //     const suggestion = await this.aiGeminiService.generateText(prompt);
+    //     return {
+    //       topic,
+    //       suggestion: suggestion.trim(),
+    //     };
+    //   }),
+    // );
+
+    const insights = {
+      summary: `You've taken ${results.length} recent quizzes.`,
+      topics: topicsToLearn,
+      scoreHistory: results, 
+      recommendations,
+      nextStep: 'Try a quiz focused on your weak and declining topics to improve.',
+    };
+
+    await this.insigthsSaveService.saveInsights(userId, insights);
+
+    return insights;
+  }
+
+
+
+  private async generateTags(results: QuizResult[]):Promise<IAdaptiveLearningTags> {
     const tagStats: Record<
       string,
       { correct: number; wrong: number; history: number[] }
@@ -44,6 +108,7 @@ export class AdaptiveLearningService {
         new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime(),
     );
 
+    
     for (let i = 0; i < results.length; i++) {
       const result = results[i];
       const tags = result.quiz?.tags || [];
@@ -99,40 +164,14 @@ export class AdaptiveLearningService {
       }
     }
 
-    const recommendations = await Promise.all(
-      weakTopics.map(async (topic) => {
-        const prompt = `A student is weak in the topic "${topic}". Generate a short(it must be very short , only 20 words ), motivational, and practical recommendation to help them improve this topic.`;
-        const suggestion = await this.aiGeminiService.generateText(prompt);
-        return {
-          topic,
-          suggestion: suggestion.trim(),
-        };
-      }),
-    );
+    const result: IAdaptiveLearningTags = {
+      strong: strongTopics,
+      weak: weakTopics,
+      improving: improvingTopics,
+      declining: decliningTopics,
+    }
 
-    const insights = {
-      summary: `You've taken ${results.length} recent quizzes.`,
-      topics: {
-        strong: strongTopics,
-        weak: weakTopics,
-        improving: improvingTopics,
-        declining: decliningTopics,
-      },
-      scoreHistory: results.map((r) => ({
-        quizId: r.quiz?.id,
-        score: r.score,
-        total: r.totalQuestions,
-        percentage: r.percentage,
-        date: r.completedAt,
-        tags: r.quiz?.tags?.map((t) => t.tag),
-      })),
-      recommendations,
-      nextStep:
-        'Try a quiz focused on your weak and declining topics to improve.',
-    };
-
-    await this.insigthsSaveService.generateInsightsAndSave(userId, insights);
-
-    return insights;
+    return result;
   }
+
 }

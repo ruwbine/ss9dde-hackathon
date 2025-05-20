@@ -10,7 +10,7 @@ export class AdaptiveLearningInsigthsSaveService {
     private readonly entityInsightsRepository: Repository<InsightsEntity>
   ) {}
 
-  async generateInsightsAndSave(userId: string, insights: any): Promise<void> {
+  async saveInsights(userId: string, insights: any): Promise<void> {
     const { summary, topics, scoreHistory, recommendations, nextStep } = insights;
 
     const userInsights = this.entityInsightsRepository.create({
