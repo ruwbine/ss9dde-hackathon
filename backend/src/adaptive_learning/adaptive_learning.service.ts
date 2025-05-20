@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiGeminiScoresService } from 'src/ai-gemini/ai-gemini-scores.service';
-import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-insigths.service';
+import { AdaptiveLearningInsigthsDataService } from './adaptive-learning-insights-data.service';
 import { AiGeminiService } from 'src/ai-gemini/ai-gemini.service';
 import { QuizResult } from 'src/ai-gemini/entities/scores.entity';
 import { IAdaptiveLearningTags } from './interfaces/adaptive-learning-tags.interface';
@@ -8,12 +8,10 @@ import { AdaptiveLearningRecommendationsService } from './recommendations/servic
 
 type TInsights = {
   summary: string,
-  topics: {
-    strong: string[],
-    weak: string[]
-    improving: string[],
-    declining: string[]
-  }
+  topics: IAdaptiveLearningTags
+  scoreHistory: QuizResult[]
+  recommendations: {topic: string, suggestion: string}[]
+  nextStep: string | null;
 }
 
 
@@ -21,7 +19,7 @@ type TInsights = {
 export class AdaptiveLearningService {
   constructor(
     private readonly aiGeminiScoresService: AiGeminiScoresService,
-    private readonly insigthsSaveService: AdaptiveLearningInsigthsSaveService,
+    private readonly insightsService: AdaptiveLearningInsigthsDataService,
     private readonly recommendationService: AdaptiveLearningRecommendationsService
   ) {}
 
@@ -43,46 +41,40 @@ export class AdaptiveLearningService {
     const completedCount =
       await this.aiGeminiScoresService.countCompletedResultsByUser(userId);
 
-    // if (completedCount < 5) {
-    //   return {
-    //     summary: `Complete ${5 - completedCount} more quizzes to get personalized insights.`,
-    //     topics: {
-    //       strong: [],
-    //       weak: [],
-    //       improving: [],
-    //       declining: [],
-    //     },
-    //     scoreHistory: [], 
-    //     recommendations: [], // какой тут тип?
-    //     nextStep: null,
-    //   };
+    if(completedCount < 5){
+      return this.returnInitialAdaptiveInfo(completedCount)
+    }
 
-    //   // можно вынести в отдельный тип или интерфейс и потом переиспользовать, просто создавая как есть новый объект.
-    // }
-
+    if(completedCount % 5 != 0){
+      return this.insightsService.getInsights(userId)
+    }
+   else {
     const scoreHistory =
-      await this.aiGeminiScoresService.getRecentResultsByUser(userId);
+    await this.aiGeminiScoresService.getRecentResultsByUser(userId);
+
+    const topics = await this.generateTags(scoreHistory);
+
+    // 1 создать схему рекомендации чтобы легче было сказать gemini, что делать
+    // отправлять не каждый тэг по отдельности, а все сразу
+    // сохранять в бд
+
+    const recommendations = await this.recommendationService.processRecommendations(topics.weak)
   
-      const topics = await this.generateTags(scoreHistory);
 
-      // 1 создать схему рекомендации чтобы легче было сказать gemini, что делать
-      // отправлять не каждый тэг по отдельности, а все сразу
-      // сохранять в бд
+  const insights: TInsights = {
+    summary: `You've taken ${scoreHistory.length} recent quizzes.`,
+    topics,
+    scoreHistory, 
+    recommendations,
+    //TODO Вместо забитого текста было бы круто реально показывать какой следующий шаг для обучения.
+    nextStep: 'Try a quiz focused on your weak and declining topics to improve.',
+  };
 
-      const recommendations = await this.recommendationService.processRecommendations(topics.weak)
-    
+  await this.insightsService.saveInsights(userId, insights);
 
-    const insights = {
-      summary: `You've taken ${scoreHistory.length} recent quizzes.`,
-      topics,
-      scoreHistory, 
-      recommendations,
-      nextStep: 'Try a quiz focused on your weak and declining topics to improve.',
-    };
-
-    await this.insigthsSaveService.saveInsights(userId, insights);
-
-    return insights;
+  return insights;
+   }
+   
   }
 
 
@@ -166,4 +158,19 @@ export class AdaptiveLearningService {
     return result;
   }
 
+
+  private returnInitialAdaptiveInfo(completedCount: number): TInsights{
+    return {
+      summary: `Complete ${5 - completedCount} more quizzes to get personalized insights.`,
+      topics: {
+        strong: [],
+        weak: [],
+        improving: [],
+        declining: [],
+      },
+      scoreHistory: [], 
+      recommendations: [], // какой тут тип?
+      nextStep: null,
+    };
+  }
 }

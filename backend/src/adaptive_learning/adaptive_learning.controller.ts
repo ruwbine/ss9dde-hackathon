@@ -4,7 +4,6 @@ import { User } from 'src/users/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { GeneratingAdaptiveQuizService } from './adaptive_learning_generation_adaptive_quiz.service';
-import { AdaptiveLearningInsigthsSaveService } from './adaptive-learning-save-insigths.service';
 
 @Controller('adaptive-learning')
 export class AdaptiveLearningController {
